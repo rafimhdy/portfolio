@@ -1,0 +1,363 @@
+---
+// src/components/Hero.astro
+---
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── Fonts ── */
+  .font-serif-instrument {
+    font-family: 'Instrument Serif', serif;
+  }
+  .font-sans-inter {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Wrapper ── */
+  .hero-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+    isolation: isolate;
+  }
+
+  /* Layer Vanta hanya di area atas, fade hilang ke bawah */
+  #hero-vanta-bg {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    width: 100vw;
+    height: 42vh;
+    min-height: 240px;
+    z-index: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+    background: linear-gradient(to bottom, rgba(190,175,255,0.18) 0%, rgba(115,207,255,0.14) 40%, rgba(255,255,255,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 36%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black 36%, transparent 100%);
+  }
+
+  @media (max-width: 768px) {
+    #hero-vanta-bg {
+      height: 34vh;
+      min-height: 200px;
+    }
+  }
+
+  /* ── Button ── */
+  .framer-btn-premium {
+    background: linear-gradient(127deg, rgb(14, 28, 41) -68%, rgb(50, 61, 104) 100%);
+    border-radius: 10px;
+    box-shadow:
+      rgb(184, 193, 230) 0px 1px 2px 0px inset,
+      rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px,
+      rgba(46, 64, 128, 0.34) 0px 1.80656px 1.80656px -1.16667px,
+      rgba(46, 64, 128, 0.33) 0px 3.62176px 3.62176px -1.75px,
+      rgba(46, 64, 128, 0.3) 0px 6.8656px 6.8656px -2.33333px,
+      rgba(46, 64, 128, 0.26) 0px 13.6468px 13.6468px -2.91667px,
+      rgba(46, 64, 128, 0.15) 0px 30px 30px -3.5px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  .framer-btn-premium:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  /* ── Photo wrap ── */
+  .hero-photo-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    transform-origin: center;
+    touch-action: manipulation;
+  }
+
+  .hero-photo-wrap:hover,
+  .hero-photo-wrap:active {
+    transform: scale(2.18);
+  }
+
+  .hero-photo {
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+
+  /* ── Morphing text ── */
+  #morphing-word {
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+  }
+
+  #morphing-word.is-exit {
+    transform: translateY(-30%) scale(0.94);
+    opacity: 0;
+  }
+
+  #morphing-word.is-enter {
+    transform: translateY(30%) scale(0.94);
+    opacity: 0;
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #morphing-word,
+    #morphing-word.is-exit,
+    #morphing-word.is-enter {
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+  }
+</style>
+
+<div id="hero-vanta" class="hero-wrapper">
+  <div id="hero-vanta-bg" aria-hidden="true"></div>
+  <!-- Hero section -->
+  <section
+    id="hero-section"
+    class="font-sans-inter flex flex-col items-center text-center py-24 md:py-36 max-w-5xl mx-auto px-4"
+    style="position: relative; z-index: 1;"
+  >
+    <h1 class="font-serif-instrument text-6xl md:text-[5.5rem] text-slate-900 tracking-tight leading-[1.08] mb-7">
+      I'm
+      <span class="hero-photo-wrap inline-block px-1 align-middle">
+        <img id="hero-photo" src="/Photo.png" alt="Foto profil Rafi" class="hero-photo w-14 h-14 md:w-20 md:h-20 rounded-2xl shadow-md object-cover transform rotate-[-4deg] border border-slate-200" />
+      </span>
+      Rafi, a multidisciplinary
+      <span id="morphing-word" class="italic font-normal text-slate-700">Specialist</span>
+      <span class="inline-block px-1 align-middle">
+        <img src="/day.png" class="w-14 h-14 md:w-20 md:h-20 rounded-2xl shadow-lg object-contain transform rotate-[6deg] border border-slate-200" />
+      </span>
+    </h1>
+
+    <p class="text-slate-500 text-base md:text-lg max-w-2xl leading-relaxed font-light">
+      Specialized in building high-performance web systems, securing infrastructure, and managing complex international supply chains.
+    </p>
+
+    <div class="mt-14">
+      <a id="explore-btn" href="#lanes" class="group framer-btn-premium text-white font-medium text-[15px] tracking-wide inline-flex items-center gap-3.5 py-4 px-8">
+        <svg width="15" height="15" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
+          <path d="M3.5 10.5L10.5 3.5M10.5 3.5H5.25M10.5 3.5V8.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Explore Lanes
+      </a>
+    </div>
+  </section>
+</div>
+
+<!-- Three.js r134 + Vanta FOG via CDN -->
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.fog.min.js"></script>
+<script is:inline>
+  (function () {
+    var hero = document.getElementById('hero-vanta');
+    var vantaTarget = document.getElementById('hero-vanta-bg');
+    var vantaEffect = null;
+
+    function createVanta() {
+      if (!vantaTarget || vantaEffect || !window.VANTA) return;
+      vantaEffect = VANTA.FOG({
+        el: '#hero-vanta-bg',
+        mouseControls: false,
+        touchControls: false,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        highlightColor: 0xffffff,
+        midtoneColor: 0x73cfff,
+        lowlightColor: 0xbeafff,
+        baseColor: 0xffffff,
+        pixelRatio: 0.6
+      });
+    }
+
+    function destroyVanta() {
+      if (!vantaEffect) return;
+      vantaEffect.destroy();
+      vantaEffect = null;
+    }
+
+    createVanta();
+
+    if ('IntersectionObserver' in window && hero) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) createVanta();
+          else destroyVanta();
+        });
+      }, { rootMargin: '160px 0px 160px 0px' });
+      observer.observe(hero);
+    }
+
+    window.addEventListener('beforeunload', destroyVanta);
+  })();
+</script>
+
+<script>
+  (() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ─────────────────────────────────────────────────────────────
+       1. MORPHING TEXT
+       Cycles: Specialist → Developer → Translator → Designer → …
+       Slide-out (up + fade), swap word, slide-in (up from below + fade).
+    ───────────────────────────────────────────────────────────── */
+    const morphEl = document.getElementById('morphing-word');
+    if (morphEl) {
+      const words = ['Specialist', 'Developer', 'Translator', 'Designer'];
+      let wordIdx = 0;
+
+      const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+      async function runMorph() {
+        while (true) {
+          await sleep(2000);
+
+          if (reducedMotion) {
+            // Instant swap, no animation
+            wordIdx = (wordIdx + 1) % words.length;
+            morphEl.textContent = words[wordIdx];
+            continue;
+          }
+
+          // 1. Slide current word out (up + fade)
+          morphEl.classList.add('is-exit');
+          await sleep(400);
+
+          // 2. Instantly reposition the new word below viewport (no transition)
+          wordIdx = (wordIdx + 1) % words.length;
+          morphEl.textContent = words[wordIdx];
+          morphEl.classList.remove('is-exit');
+          morphEl.classList.add('is-enter');
+
+          // 3. Force reflow so the browser registers is-enter's position before re-enabling transition
+          void morphEl.offsetWidth;
+
+          // 4. Slide new word in (from below → center)
+          morphEl.classList.remove('is-enter');
+        }
+      }
+
+      runMorph();
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+       2. 3D PHOTO TILT
+       Tracks mouse over #hero-section and tilts #hero-photo in 3D.
+       Uses rAF + lerp for smooth spring-like motion.
+       Base rotation rotateZ(-4deg) preserved in transform string.
+    ───────────────────────────────────────────────────────────── */
+    const heroSection = document.getElementById('hero-section');
+    const heroPhoto   = document.getElementById('hero-photo') as HTMLImageElement | null;
+
+    if (heroSection && heroPhoto && !reducedMotion) {
+      const MAX_TILT = 15;
+      let rafId: number | null = null;
+
+      // Target and current angles
+      let targetRx = 0, targetRy = 0;
+      let currentRx = 0, currentRy = 0;
+      let isInside = false;
+
+      function lerp(a: number, b: number, t: number) {
+        return a + (b - a) * t;
+      }
+
+      function animateTilt() {
+        currentRx = lerp(currentRx, targetRx, 0.12);
+        currentRy = lerp(currentRy, targetRy, 0.12);
+
+        // Compose: perspective + base -4deg tilt + mouse-driven tilt
+        heroPhoto.style.transform =
+          `perspective(600px) rotateZ(-4deg) rotateX(${currentRx.toFixed(2)}deg) rotateY(${currentRy.toFixed(2)}deg)`;
+
+        const settled =
+          Math.abs(currentRx - targetRx) < 0.01 &&
+          Math.abs(currentRy - targetRy) < 0.01;
+
+        if (!settled || isInside) {
+          rafId = requestAnimationFrame(animateTilt);
+        } else {
+          rafId = null;
+          // Let the CSS class (rotate-[-4deg]) take over once fully settled
+          if (!isInside) heroPhoto.style.transform = '';
+        }
+      }
+
+      heroSection.addEventListener('mouseenter', () => { isInside = true; });
+
+      heroSection.addEventListener('mousemove', (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        // Normalise to -1 … +1 relative to section centre
+        const nx = (e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2);
+        const ny = (e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2);
+
+        targetRy =  nx * MAX_TILT;   // mouse right  → lean right
+        targetRx = -ny * MAX_TILT;   // mouse up     → lean back
+
+        if (!rafId) rafId = requestAnimationFrame(animateTilt);
+      }, { passive: true });
+
+      heroSection.addEventListener('mouseleave', () => {
+        isInside  = false;
+        targetRx  = 0;
+        targetRy  = 0;
+        if (!rafId) rafId = requestAnimationFrame(animateTilt);
+      });
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+       3. MAGNETIC BUTTON
+       Within RADIUS px of button centre the button is pulled toward
+       the cursor with a PULL factor. Snaps back with a slow spring.
+    ───────────────────────────────────────────────────────────── */
+    const btn = document.getElementById('explore-btn') as HTMLAnchorElement | null;
+
+    if (btn && !reducedMotion) {
+      const RADIUS = 80;  // px — magnetic activation zone
+      const PULL   = 0.38; // strength multiplier (0 = no pull, 1 = full pull)
+      let springTimer: ReturnType<typeof setTimeout> | null = null;
+
+      function onMouseMove(e: MouseEvent) {
+        const rect = btn.getBoundingClientRect();
+        const cx   = rect.left + rect.width  / 2;
+        const cy   = rect.top  + rect.height / 2;
+        const dx   = e.clientX - cx;
+        const dy   = e.clientY - cy;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < RADIUS) {
+          // Cancel any pending spring-back timer
+          if (springTimer) { clearTimeout(springTimer); springTimer = null; }
+
+          // Pull strength grows as cursor gets closer to centre
+          const factor = (1 - dist / RADIUS) * PULL;
+          btn.style.transition = 'transform 0.12s ease, filter 0.2s ease';
+          btn.style.transform  = `translate(${(dx * factor).toFixed(1)}px, ${(dy * factor).toFixed(1)}px)`;
+        } else {
+          // Smooth spring back; clear the inline transition after it completes
+          btn.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease';
+          btn.style.transform  = '';
+          if (springTimer) clearTimeout(springTimer);
+          springTimer = setTimeout(() => {
+            btn.style.transition = '';
+          }, 500);
+        }
+      }
+
+      // Throttle dengan rAF — 1 update per frame, bukan 1 per pixel
+      let btnRaf = 0;
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (btnRaf) return;
+        btnRaf = requestAnimationFrame(() => {
+          btnRaf = 0;
+          onMouseMove(e);
+        });
+      }, { passive: true });
+    }
+  })();
+</script>

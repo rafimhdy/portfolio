@@ -1,0 +1,273 @@
+---
+// src/components/ToolsSection.astro
+import { sanityClient } from 'sanity:client';
+import imageUrlBuilder from '@sanity/image-url';
+
+interface Props {
+  category: string;
+}
+
+const { category } = Astro.props;
+
+const builder = imageUrlBuilder(sanityClient);
+function urlFor(source: any) {
+  return builder.image(source);
+}
+
+const tools = await sanityClient.fetch(
+  `*[_type == "tool" && category == $category] | order(_createdAt desc) {
+    _id,
+    name,
+    logo
+  }`,
+  { category }
+);
+
+const chunkArray = (arr: any[], size: number) => {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+};
+
+const toolsGroups = chunkArray(tools, 10);
+---
+
+<section class="tools-section">
+  <div class="section-header">
+    <h2 class="section-title">Tools & Skills</h2>
+    <p class="section-subtitle">The software and stack I use everyday.</p>
+  </div>
+
+  <div class="glass-cards-layout">
+    {toolsGroups.length > 0 ? (
+      toolsGroups.map((group) => (
+        <div class={`glass-card ${group.length === 10 ? 'bento-perfect' : 'bento-flexible'}`}>
+          {group.map((tool: any) => (
+            <div class="tool-item-wrapper font-satoshi">
+              
+              <div class="logo-display">
+                {tool.logo ? (
+                  <img 
+                    src={urlFor(tool.logo).width(200).url()} 
+                    alt={tool.name} 
+                    class="tool-logo" 
+                    loading="lazy" 
+                  />
+                ) : (
+                  <span class="tool-fallback">{tool.name}</span>
+                )}
+              </div>
+
+              <div class="glass-overlay">
+                <span class="skill-name">{tool.name}</span>
+              </div>
+
+            </div>
+          ))}
+        </div>
+      ))
+    ) : (
+      <div class="glass-card empty-card">
+        <p class="empty-state font-satoshi">No tools found for this category.</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .font-satoshi { font-family: 'Satoshi', sans-serif; }
+
+  .tools-section {
+    margin: 80px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .section-header { text-align: center; padding: 0 24px; }
+  .section-title { font-family: 'Instrument Serif', serif; font-size: 48px; color: #0f172a; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .section-subtitle { font-family: 'Inter', sans-serif; color: #64748b; font-size: 16px; margin: 0; }
+
+  /* ── 1. LAYOUT UTAMA: FLEX WRAP CENTER ── */
+  .glass-cards-layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Bikin kotak ke-3 (ganjil) otomatis ke tengah */
+    gap: 32px;
+    width: 100%;
+    max-width: 864px; 
+    padding: 20px 24px;
+    margin: 0 auto;
+  }
+
+  /* ── 2. INDUK BOX GLASSMORPHISM ── */
+  .glass-card {
+    flex: 0 0 auto;
+    
+    /* KUNCI FIX: Memaksa lebar tepat 50% dikurangi setengah gap, biar pasti muat 2 per baris */
+    width: calc(50% - 16px); 
+    max-width: 400px;
+    height: 400px; 
+    
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 
+      0 20px 40px -15px rgba(16, 49, 77, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  /* ── 3A. LAYOUT BENTO GRID (PAS 10 ITEM) ── */
+  .bento-perfect {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .bento-perfect .tool-item-wrapper:nth-child(1),
+  .bento-perfect .tool-item-wrapper:nth-child(8) { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+  }
+
+  /* ── 3B. LAYOUT FLEKSIBEL (KURANG DARI 10 ITEM) ── */
+  .bento-flexible {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .bento-flexible .tool-item-wrapper {
+    width: 100px; 
+    height: 100px;
+  }
+
+  /* ── 4. STYLING KOTAK SKILL (ITEM) ── */
+  .tool-item-wrapper {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+  }
+
+  .logo-display {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tool-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    max-height: 48px;
+    max-width: 85%;
+  }
+
+  .bento-perfect .tool-item-wrapper:nth-child(1) .tool-logo,
+  .bento-perfect .tool-item-wrapper:nth-child(8) .tool-logo {
+    max-height: 80px;
+  }
+
+  /* ── 5. GLASSMORPHISM SLIDE-UP OVERLAY ── */
+  .glass-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    box-sizing: border-box;
+    transform: translateY(101%);
+    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+  }
+
+  .tool-item-wrapper:hover .glass-overlay,
+  .tool-item-wrapper.active .glass-overlay {
+    transform: translateY(0);
+  }
+
+  .tool-item-wrapper:hover .logo-display {
+    transform: scale(0.85); 
+  }
+
+  .skill-name {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
+  .bento-perfect .tool-item-wrapper:nth-child(1) .skill-name,
+  .bento-perfect .tool-item-wrapper:nth-child(8) .skill-name {
+    font-size: 16px;
+  }
+
+  .tool-fallback { font-family: 'Satoshi', sans-serif; font-size: 12px; font-weight: 600; color: #475569; text-align: center; }
+  .empty-card { display: flex; align-items: center; justify-content: center; }
+  .empty-state { color: #64748b; font-size: 14px; }
+
+  /* ── MOBILE MODE RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .glass-cards-layout { gap: 16px; padding: 20px 16px; }
+    
+    .glass-card { 
+      width: 100%; /* Balikin ke 1 baris 1 kotak kalau di HP */
+      height: auto; 
+      aspect-ratio: 1/1; 
+      padding: 16px; 
+      max-width: 100%; 
+    }
+    
+    .bento-perfect { gap: 10px; }
+    .bento-flexible { gap: 10px; }
+    .bento-flexible .tool-item-wrapper { width: calc(33.33% - 7px); height: auto; aspect-ratio: 1/1; }
+    .skill-name { font-size: 11px; }
+    .bento-perfect .tool-item-wrapper:nth-child(1) .skill-name,
+    .bento-perfect .tool-item-wrapper:nth-child(8) .skill-name { font-size: 14px; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const items = document.querySelectorAll('.tool-item-wrapper');
+    
+    items.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        items.forEach(i => { if(i !== item) i.classList.remove('active') });
+        item.classList.toggle('active');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      items.forEach(item => item.classList.remove('active'));
+    });
+  });
+</script>

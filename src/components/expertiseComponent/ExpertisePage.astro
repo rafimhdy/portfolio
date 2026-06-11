@@ -1,0 +1,142 @@
+---
+import { sanityClient } from 'sanity:client';
+import Navbar from '../Navbar.astro';
+import ProfileSidebar from './ProfileSidebar.astro';
+import IntroSection from './IntroSection.astro';
+import ToolsSection from './ToolsSection.astro';
+import ExperienceSection from './ExperienceSection.astro';
+import ProjectsSection from './ProjectsSection.astro';
+import Footer from '../Footer.astro';
+
+interface Props {
+  slug: string;
+  title: string;
+  introText: string;
+}
+
+const { slug, title, introText } = Astro.props;
+
+// Hapus fetch tools dari sini, biarkan ToolsSection.astro yang fetch sendiri
+const experiences = await sanityClient.fetch(
+  `*[_type == "experience" && category == $category] | order(startDate desc) {
+    _id,
+    role,
+    company,
+    companyLogo,
+    location,
+    startDate,
+    endDate,
+    currentJob,
+    description
+  }`, 
+  { category: slug }
+);
+---
+
+<style>
+  .expertise-page {
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: #17202e;
+  }
+
+  .expertise-shell {
+    width: min(100%, 1320px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  .sidebar-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  @media (min-width: 1024px) {
+    .expertise-shell {
+      grid-template-columns: 292px minmax(0, 1fr);
+      gap: 46px;
+      align-items: flex-start;
+    }
+    .sidebar-column {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 32px;
+      height: max-content;
+      align-self: flex-start;
+    }
+  }
+
+  .content-panel {
+    padding-top: 22px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .content-panel {
+      min-height: 0;
+      --experience-max-height: 0px;
+    }
+  }
+</style>
+
+<section class="expertise-page">
+  <Navbar isPage={true} />
+
+  <div class="expertise-shell">
+    <aside class="sidebar-column">
+      <ProfileSidebar title={title} />
+    </aside>
+
+    <div class="content-panel">
+      <IntroSection introText={introText} />
+      <ExperienceSection experiences={experiences} slug={slug} />
+    </div>
+  </div>
+  
+  <ProjectsSection category={slug} />
+  <ToolsSection category={slug} />
+  <Footer />
+  </section>
+
+<script slot="scripts">
+  const syncExperienceHeight = () => {
+    const sidebar = document.getElementById('profile');
+    const experiencePanel = document.querySelector('.experience-panel');
+    const contentPanel = document.querySelector('.content-panel');
+
+    if (!sidebar || !experiencePanel || !contentPanel) return;
+
+    const sidebarHeight = sidebar.offsetHeight;
+    const contentTop = contentPanel.getBoundingClientRect().top;
+    const expTop = experiencePanel.getBoundingClientRect().top;
+    const elementsAboveHeight = expTop - contentTop;
+    const calculatedHeight = sidebarHeight - elementsAboveHeight;
+
+    experiencePanel.style.setProperty('--experience-max-height', `${Math.max(200, calculatedHeight)}px`);
+  };
+
+  const start = () => {
+    syncExperienceHeight();
+
+    const sidebar = document.getElementById('profile');
+    if (sidebar && 'ResizeObserver' in window) {
+      const observer = new ResizeObserver(() => syncExperienceHeight());
+      observer.observe(sidebar);
+      window.addEventListener('resize', syncExperienceHeight);
+    } else {
+      window.addEventListener('resize', syncExperienceHeight);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
+</script>

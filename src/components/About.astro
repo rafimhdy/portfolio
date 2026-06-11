@@ -1,0 +1,498 @@
+---
+// src/components/AboutSection.astro
+const aboutText = "Perjalanan saya tumbuh dari Bandung: dari disiplin teknis di SMK Negeri 13, berlanjut ke Politeknik Negeri Bandung, lalu berkembang menjadi cara saya membangun karya digital yang rapi, fungsional, dan punya rasa.";
+const words = aboutText.split(" ");
+---
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
+  .font-instrument { font-family: 'Instrument Serif', serif; }
+  .font-inter      { font-family: 'Inter', sans-serif; }
+
+  /* ── 1. SCROLL TRACK — full-bleed, background di sini ─────────── */
+  .about-scroll-track {
+    position: relative;
+    height: 500vh;
+    overflow: clip;
+
+    /*
+      Full-bleed breakout dari parent container yang punya max-width/padding.
+      Teknik: geser kiri sejauh selisih viewport vs element width.
+    */
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+
+    /* Background ditaruh di track (bukan viewport) supaya mengisi 500vh penuh */
+    background-color: #f8f7f5;
+  }
+
+  /* ── 2. STICKY VIEWPORT — transparent, opacity dihandle JS ─────── */
+  .about-sticky-viewport {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    /*
+      Tidak ada background di sini — biar track yang cover.
+      Opacity awal 0, JS yang fade in/out untuk transisi mulus antar section.
+    */
+    opacity: 0;
+    will-change: opacity;
+  }
+
+  /* ── 3. AMBIENT ORB ────────────────────────────────────────────── */
+  .about-ambient-orb {
+    position: absolute;
+    z-index: 1;
+    width: clamp(500px, 65vw, 850px);
+    height: clamp(500px, 65vw, 850px);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      rgba(63, 197, 255, 0.3) 0%,
+      rgba(128, 198, 255, 0.22) 40%,
+      transparent 68%
+    );
+    pointer-events: none;
+    will-change: transform;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* ── 4. CORNER INFO — top-right ────────────────────────────────── */
+  .about-corner-info {
+    position: absolute;
+    top: clamp(28px, 4vh, 52px);
+    right: clamp(52px, 5.5vw, 80px);
+    z-index: 40;
+    pointer-events: none;
+    text-align: right;
+  }
+  .corner-info-line {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    color: rgba(15, 23, 42, 0.6);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.8;
+  }
+
+  /* ── 5. SCROLL PROGRESS BAR — right edge ──────────────────────── */
+  .about-progress-bar {
+    position: absolute;
+    right: clamp(18px, 2.5vw, 32px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    pointer-events: none;
+  }
+  .progress-cap {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.14);
+    flex-shrink: 0;
+  }
+  .progress-track {
+    width: 1px;
+    height: 68px;
+    background: rgba(15, 23, 42, 0.08);
+    position: relative;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+  .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 1px;
+    will-change: height;
+  }
+
+  /* ── 6. TEXT CONTAINER ─────────────────────────────────────────── */
+  .about-text-container {
+    position: relative;
+    z-index: 30;
+    max-width: 700px;
+    width: 100%;
+    padding: 0 52px;
+    box-sizing: border-box;
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .reveal-text-block {
+    text-align: center;
+    font-size: clamp(23px, 2.35vw, 36px);
+    line-height: 1.52;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+    margin: 0;
+    color: rgba(15, 23, 42, 0.07); /* Fallback untuk kata belum aktif */
+  }
+
+  /* ── 7. KATA-KATA ──────────────────────────────────────────────── */
+  .about-word {
+    display: inline-block;
+    color: rgba(15, 23, 42, 0.065);
+    transform: translate3d(0, 0, 0);
+    transition:
+      color 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+      transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: color, transform;
+  }
+  .about-word.is-active {
+    color: rgb(15, 23, 42);
+    transform: translate3d(0, -2px, 0);
+  }
+
+  /* ── 8. STATS — muncul setelah teks selesai ─────────────────────── */
+  .about-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.85s ease, transform 0.85s ease;
+  }
+  .about-stats.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 0 clamp(16px, 2.8vw, 32px);
+  }
+  .stat-item + .stat-item {
+    border-left: 1px solid rgba(15, 23, 42, 0.1);
+  }
+  .stat-val {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(16px, 1.6vw, 20px);
+    font-weight: 400;
+    color: rgba(15, 23, 42, 0.7);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .stat-key {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: rgba(15, 23, 42, 0.25);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  /* ── 9. PHOTO CARDS ────────────────────────────────────────────── */
+  .about-photo-card {
+    position: absolute;
+    z-index: 20;
+    width: clamp(128px, 12.5vw, 196px);
+    height: clamp(172px, 16.8vw, 262px);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow:
+      0 2px 4px rgba(15, 23, 42, 0.04),
+      0 8px 22px rgba(15, 23, 42, 0.08),
+      0 28px 56px rgba(15, 23, 42, 0.05),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: translate3d(0, 100vh, 0);
+  }
+  .about-photo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.82) brightness(1.04);
+  }
+
+  /* Overlay metadata bawah foto */
+  .photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 36px 12px 11px;
+    background: linear-gradient(
+      to top,
+      rgba(8, 12, 24, 0.65) 0%,
+      rgba(8, 12, 24, 0.2) 60%,
+      transparent 100%
+    );
+  }
+  .photo-label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    line-height: 1.4;
+    margin-bottom: 2px;
+  }
+  .photo-year {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 7.5px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.44);
+    text-transform: uppercase;
+  }
+
+  /* Posisi kartu */
+  .pos-left  { left:  clamp(28px, 4.5vw, 88px); }
+  .pos-right { right: clamp(28px, 4.5vw, 88px); }
+  .photo-smk     { top: 35vh; }
+  .photo-polban  { top: 60vh; }
+  .photo-bandung { top: 40vh; }
+
+  /* ── 10. RESPONSIVE ─────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .about-scroll-track { height: 420vh; }
+    .about-photo-card {
+      width: 30vw;
+      height: 42vw;
+      /* Di mobile foto menjadi ambient, bukan focal — opacity sangat rendah */
+      opacity: 0.18 !important;
+    }
+    .pos-left  { left: -5vw; }
+    .pos-right { right: -5vw; }
+    .about-text-container { padding: 0 22px; gap: 28px; }
+    .reveal-text-block { font-size: clamp(19px, 5.2vw, 25px); }
+    .about-progress-bar { display: none; }
+    .about-corner-info  { display: none; }
+    .stat-item { padding: 0 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-scroll-track { height: auto; padding: 100px 0; }
+    .about-sticky-viewport {
+      position: relative;
+      height: auto;
+      overflow: visible;
+      opacity: 1 !important;
+    }
+    .about-photo-card {
+      position: relative;
+      top: auto; left: auto; right: auto;
+      margin: 24px auto;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .about-word { color: rgb(15, 23, 42); }
+    .about-stats { opacity: 1; transform: none; }
+  }
+</style>
+
+<section id="abt-track" class="about-scroll-track font-inter">
+  <div class="about-sticky-viewport" id="abt-viewport">
+
+    <!-- Ambient warm glow -->
+    <div class="about-ambient-orb" id="abt-orb"></div>
+
+    <!-- Corner info top-right -->
+    <div class="about-corner-info font-inter">
+      <span class="corner-info-line">Bandung</span>
+      <span class="corner-info-line">Jawa Barat</span>
+    </div>
+
+    <!-- Scroll progress right-edge -->
+    <div class="about-progress-bar">
+      <div class="progress-cap"></div>
+      <div class="progress-track">
+        <div class="progress-fill" id="abt-prog-fill"></div>
+      </div>
+      <div class="progress-cap"></div>
+    </div>
+
+    <!-- Photo: SMK -->
+    <figure class="about-photo-card pos-left photo-smk" id="abt-card-smk">
+      <img src="/smk13.webp" alt="SMK Negeri 13 Bandung" loading="lazy" />
+      <div class="photo-overlay">
+        <span class="photo-label">SMK Negeri 13</span>
+        <span class="photo-year">2019 — 2022</span>
+      </div>
+    </figure>
+
+    <!-- Photo: Polban -->
+    <figure class="about-photo-card pos-right photo-polban" id="abt-card-polban">
+      <img src="/polban.webp" alt="Politeknik Negeri Bandung" loading="lazy" />
+      <div class="photo-overlay">
+        <span class="photo-label">Politeknik Negeri Bandung</span>
+        <span class="photo-year">2022 — 2025</span>
+      </div>
+    </figure>
+
+    <!-- Photo: Bandung -->
+    <figure class="about-photo-card pos-left photo-bandung" id="abt-card-bandung">
+      <img src="/alun-alun-bandung.webp" alt="Alun-Alun Bandung" loading="lazy" />
+      <div class="photo-overlay">
+        <span class="photo-label">Bandung, Jawa Barat</span>
+        <span class="photo-year">Home</span>
+      </div>
+    </figure>
+
+    <!-- Teks utama + stats -->
+    <div class="about-text-container">
+      <p class="font-instrument reveal-text-block" id="abt-text">
+        {words.map((word) => (
+          <span class="about-word">{word}&nbsp;</span>
+        ))}
+      </p>
+
+      <div class="about-stats font-inter" id="abt-stats">
+        <div class="stat-item">
+          <span class="stat-val">20+</span>
+          <span class="stat-key">Klien</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">3</span>
+          <span class="stat-key">Sertifikasi</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">C1</span>
+          <span class="stat-key">English</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val">3.65</span>
+          <span class="stat-key">IPK</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const initAbout = () => {
+    const track    = document.getElementById('abt-track');
+    const viewport = document.getElementById('abt-viewport');
+    const textEl   = document.getElementById('abt-text');
+    const orb      = document.getElementById('abt-orb');
+    const progFill = document.getElementById('abt-prog-fill');
+    const stats    = document.getElementById('abt-stats');
+    const cSmk     = document.getElementById('abt-card-smk');
+    const cPolban  = document.getElementById('abt-card-polban');
+    const cBandung = document.getElementById('abt-card-bandung');
+
+    if (!track || !viewport || !textEl) return;
+
+    /* Rebuild word spans jika perlu (anti-duplikasi Astro View Transitions) */
+    if (!textEl.querySelector('.about-word')) {
+      const tokens = (textEl.textContent || '').trim().split(/\s+/);
+      textEl.innerHTML = '';
+      tokens.forEach(t => {
+        const s = document.createElement('span');
+        s.className = 'about-word';
+        s.textContent = t + '\u00A0';
+        textEl.appendChild(s);
+      });
+    }
+    const words = Array.from(textEl.querySelectorAll('.about-word'));
+
+    /* ── Cubic ease-out lerp ─────────────────────────────────────── */
+    const lerp = (p: number, s: number, e: number, a: number, b: number) => {
+      if (p <= s) return a;
+      if (p >= e) return b;
+      const t = (p - s) / (e - s);
+      return a + (b - a) * (1 - Math.pow(1 - t, 3));
+    };
+
+    let raf = false;
+
+    const tick = () => {
+      const rect  = track.getBoundingClientRect();
+      const vh    = window.innerHeight;
+      const total = rect.height - vh;
+      const p     = Math.max(0, Math.min(1, -rect.top / total));
+
+      /* ── A. VIEWPORT FADE IN/OUT (fix garis kaku antar section) ── 
+         Fade in: 0% → 5% progress
+         Fade out: 92% → 100% progress
+         Ini yang bikin transisi atas/bawah mulus — tidak ada hard cut.       */
+      const vOpacity = p < 0.05 ? p / 0.05 : p > 0.92 ? (1 - p) / 0.08 : 1;
+      viewport.style.opacity = vOpacity.toFixed(3);
+
+      /* ── B. PROGRESS BAR ─────────────────────────────────────────  */
+      if (progFill) progFill.style.height = (p * 100).toFixed(1) + '%';
+
+      /* ── C. TEXT REVEAL ──────────────────────────────────────────  */
+      const thresh = Math.floor(p * words.length * 1.2);
+      words.forEach((w, i) => w.classList.toggle('is-active', i < thresh));
+
+      /* ── D. STATS REVEAL (setelah teks hampir selesai) ───────────  */
+      stats?.classList.toggle('is-visible', p > 0.87);
+
+      /* ── E. AMBIENT ORB — melayang pelan ke atas ─────────────────  */
+      if (orb) {
+        const dy = lerp(p, 0, 1, 0, -35);
+        orb.style.transform = `translate(-50%, calc(-50% + ${dy}px))`;
+      }
+
+      /* ── F. PHOTO PARALLAX STAGGERED ─────────────────────────────  */
+      if (cSmk) {
+        const y = lerp(p, 0.0, 0.42, 100, -62);
+        const o = p < 0.04 ? lerp(p, 0.0, 0.04, 0, 1) : lerp(p, 0.30, 0.42, 1, 0);
+        cSmk.style.transform = `translate3d(0,${y}vh,0) rotate(-1.5deg)`;
+        cSmk.style.opacity   = o.toFixed(3);
+      }
+      if (cPolban) {
+        const y = lerp(p, 0.22, 0.68, 100, -65);
+        const o = p < 0.27 ? lerp(p, 0.22, 0.27, 0, 1) : lerp(p, 0.55, 0.68, 1, 0);
+        cPolban.style.transform = `translate3d(0,${y}vh,0) rotate(2deg)`;
+        cPolban.style.opacity   = o.toFixed(3);
+      }
+      if (cBandung) {
+        const y = lerp(p, 0.48, 0.95, 100, -60);
+        const o = p < 0.53 ? lerp(p, 0.48, 0.53, 0, 1) : lerp(p, 0.82, 0.95, 1, 0);
+        cBandung.style.transform = `translate3d(0,${y}vh,0) rotate(-1deg)`;
+        cBandung.style.opacity   = o.toFixed(3);
+      }
+
+      raf = false;
+    };
+
+    const onScroll = () => {
+      if (!raf) { requestAnimationFrame(tick); raf = true; }
+    };
+
+    window.removeEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    tick(); /* Run sekali on init supaya state awal benar */
+  };
+
+  document.addEventListener('DOMContentLoaded', initAbout);
+  document.addEventListener('astro:page-load', initAbout);
+</script>

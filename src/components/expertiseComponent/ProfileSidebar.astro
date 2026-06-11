@@ -1,0 +1,212 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<style>
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  .profile-card {
+    background-color: #FCFDFD;
+    cursor: default;
+    z-index: 2;
+    border-radius: 16px;
+    flex: 0 0 auto;
+    gap: 24px;
+    width: 100%;
+    height: min-content;
+    padding: 6px 9px 30px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    position: relative;
+    overflow: visible;
+    box-shadow:
+      rgba(16, 49, 77, 0.14) 0px 0.597144px 0.597144px -0.875px,
+      rgba(16, 49, 77, 0.13) 0px 1.81088px 1.81088px -1.75px,
+      rgba(16, 49, 77, 0.11) 0px 4.78699px 4.78699px -2.625px,
+      rgba(16, 49, 77, 0.06) 0px 15px 15px -3.5px;
+    box-sizing: border-box;
+    position: sticky;
+  top: 24px; /* Atur jarak dari atas layar pas dia berhenti */
+  align-self: flex-start;
+  }
+
+  .profile-photo-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1.12;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #e2e8f0;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  }
+
+  .profile-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-position: center center;
+    object-fit: cover;
+    box-sizing: border-box;
+  }
+
+  .profile-body {
+    padding: 20px 12px 14px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #263242;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-transform: lowercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .availability-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #39ff35;
+    box-shadow: 0 0 12px rgba(57, 255, 53, 0.75);
+  }
+
+  .profile-name {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1.85rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #0c1624;
+    margin: 0 0 12px;
+    padding: 0 10px;
+    word-break: break-word;
+  }
+
+  .profile-tagline {
+    font-family: 'Inter', sans-serif;
+    color: #263242;
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 250px;
+    margin: 0 auto 28px;
+  }
+
+  .social-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 24px;
+  }
+
+  .social-link {
+    background-color: rgb(216, 223, 229);
+    border-radius: 201px;
+    opacity: 1;
+    display: flex;
+    flex-flow: row;
+    place-content: center;
+    align-items: center;
+    gap: 24px;
+    width: min-content;
+    height: min-content;
+    padding: 8px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    color: #6b7280;
+    transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .social-link:hover {
+    transform: translateY(-2px);
+    background: #d3dae2;
+    color: #17202e;
+  }
+
+  .social-link svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .contact-button {
+    background: linear-gradient(127deg, rgb(14, 28, 41) -68%, rgb(50, 61, 104) 100%);
+    border-radius: 10px;
+    box-shadow:
+      rgb(184, 193, 230) 0px 1px 2px 0px inset,
+      rgba(46, 64, 128, 0.48) 0px 0.706592px 0.706592px -0.583333px,
+      rgba(46, 64, 128, 0.47) 0px 1.80656px 1.80656px -1.16667px,
+      rgba(46, 64, 128, 0.46) 0px 3.62176px 3.62176px -1.75px,
+      rgba(46, 64, 128, 0.43) 0px 6.8656px 6.8656px -2.33333px,
+      rgba(46, 64, 128, 0.36) 0px 13.6468px 13.6468px -2.91667px,
+      rgba(46, 64, 128, 0.21) 0px 30px 30px -3.5px;
+    width: 100%;
+    opacity: 1;
+    display: flex;
+    cursor: pointer;
+    flex-flow: row;
+    place-content: center;
+    align-items: center;
+    gap: 6px;
+    height: min-content;
+    padding: 12px 24px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+  }
+</style>
+
+<aside id="profile" class="profile-card">
+  <div class="profile-photo-wrap">
+    <img src="/Photo.png" alt="Rafi Mahdy" class="profile-photo" />
+  </div>
+
+  <div class="profile-body">
+    <div class="availability">
+      <span class="availability-dot"></span>
+      <span>available for work</span>
+    </div>
+
+    <h1 class="profile-name">Muhammad Rafi Mahdy</h1>
+    <p class="profile-tagline">{title} Specialist Based in Indonesia.</p>
+
+    <div class="social-list" aria-label="Social links">
+      <a href="https://twitter.com" target="_blank" class="social-link" title="X">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.402 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.252 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+      </a>
+      <a href="https://instagram.com" target="_blank" class="social-link" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM12 7.35A4.65 4.65 0 1 1 12 16.65 4.65 4.65 0 0 1 12 7.35Zm0 2A2.65 2.65 0 1 0 12 14.65 2.65 2.65 0 0 0 12 9.35ZM17.15 6.7a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z" /></svg>
+      </a>
+      <a href="https://linkedin.com" target="_blank" class="social-link" title="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3A2 2 0 0 1 21 5v14a2 2 0 0 1-2 2H5A2 2 0 0 1 3 19V5a2 2 0 0 1 2-2h14ZM8.34 18v-7.72H5.93V18h2.41ZM7.13 9.22c.78 0 1.27-.52 1.27-1.17-.02-.67-.49-1.17-1.25-1.17s-1.27.5-1.27 1.17c0 .65.49 1.17 1.23 1.17h.02ZM18.07 18v-4.39c0-2.35-1.25-3.44-2.92-3.44-1.35 0-1.95.74-2.28 1.26h.02v-1.15h-2.41c.03.72 0 7.72 0 7.72h2.41v-4.31c0-.23.02-.46.08-.63.17-.46.55-.94 1.2-.94.85 0 1.19.65 1.19 1.6V18h2.71Z" /></svg>
+      </a>
+    </div>
+
+    <a href="mailto:rafi@quansel.com" class="contact-button">
+      <svg width="17" height="17" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3.5 10.5L10.5 3.5M10.5 3.5H5.25M10.5 3.5V8.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      Contact Me
+    </a>
+  </div>
+</aside>

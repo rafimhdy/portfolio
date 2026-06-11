@@ -1,0 +1,100 @@
+---
+// src/components/Footer.astro
+const currentYear = new Date().getFullYear();
+---
+
+<style>
+  .instrument-title {
+    font-family: 'Instrument Serif', serif;
+  }
+  .sans-inter {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Animasi melayang smooth & tenang bawaan Framer */
+  @keyframes smoothFloat {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* BADGE TANGAN 3D RAFI (Versi Awal) */
+  .hand-badge-premium {
+    animation: smoothFloat 4s ease-in-out infinite;
+    background: rgb(255, 255, 255); 
+    border-radius: 100px !important;
+    padding: 3px; 
+    position: relative;
+    overflow: hidden; 
+    box-shadow: 
+      rgba(0, 0, 0, 0.09) 0px 1.34px 0.53px -0.62px, 
+      rgba(0, 0, 0, 0.09) 0px 3.18px 1.27px -1.25px, 
+      rgba(0, 0, 0, 0.08) 0px 5.80px 2.32px -1.87px, 
+      rgba(0, 0, 0, 0.08) 0px 9.65px 3.86px -2.5px, 
+      rgba(0, 0, 0, 0.07) 0px 15.5px 6.23px -3.12px, 
+      rgba(0, 0, 0, 0.06) 0px 25.5px 10.2px -3.75px, 
+      rgba(0, 0, 0, 0.04) 0px 43.9px 17.5px -4.37px, 
+      rgba(0, 0, 0, 0) 0px 80px 32px -5px;
+  }
+
+  /* Styling Tombol Berderet (Versi Awal Premium) */
+  .btn-dark {
+    background: linear-gradient(127deg, rgb(14, 28, 41) -68%, rgb(50, 61, 104) 100%);
+    box-shadow: inset 0px 1px 2px 0px rgb(184, 193, 230), rgba(46, 64, 128, 0.25) 0 30px 30px -3.5px;
+  }
+  .btn-light {
+    background: linear-gradient(126deg, rgba(94, 120, 143, 0.5) -44%, rgba(240, 248, 255, 0.9) 55%);
+    box-shadow: inset 0px 2px 4px 0px rgb(255, 255, 255), rgba(121, 152, 189, 0.15) 0 25px 25px -3.5px;
+  }
+  .btn-dark:hover, .btn-light:hover {
+    transform: translateY(-1.5px);
+    filter: brightness(1.03);
+  }
+</style>
+
+<section id="contact" class="w-full bg-[#D8DFE5] rounded-t-[80px] md:rounded-t-[100px] pt-16 pb-10 mt-20 sans-inter antialiased relative overflow-hidden">
+  
+  <div class="max-w-[1140px] mx-auto px-4 flex flex-col items-center justify-center">
+    
+    <div class="flex justify-center mb-6">
+      <div class="hand-badge-premium w-16 h-16 md:w-20 md:h-20">
+        <img 
+          src="/illustation-handshake.png" 
+          alt="Illustration Handshake" 
+          class="w-full h-full object-cover rounded-full"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <h2 class="instrument-title text-5xl md:text-6xl text-slate-950 text-center tracking-tight leading-[1.1] mb-3 max-w-3xl">
+      Let's build something beautiful together.
+    </h2>
+    
+    <p class="text-slate-700 font-light text-center text-sm md:text-base max-w-lg mb-8 leading-relaxed">
+      Open for remote roles, complex web systems engineering, and technical translation projects.
+    </p>
+
+    <div class="flex flex-row items-center justify-center gap-5 flex-wrap mb-14">
+      
+      <a href="mailto:hello@mrafimahdy.works" class="btn-dark flex flex-row items-center gap-3.5 px-7 py-3.5 rounded-xl text-white font-medium text-[15px] transition-all">
+        Contact Me
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7"></line>
+          <polyline points="7 7 17 7 17 17"></polyline>
+        </svg>
+      </a>
+
+      <a href="#lanes" class="btn-light flex flex-row items-center gap-3.5 px-7 py-3.5 rounded-xl text-slate-950 font-medium text-[15px] transition-all">
+        See Projects
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+
+    </div>
+
+
+  </div>
+</section>

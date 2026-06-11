@@ -1,0 +1,471 @@
+---
+// src/components/BentoGrid.astro
+const categories = [
+  {
+    num: "01",
+    slug: "admin",
+    title: "Administrative Support",
+    desc: "Handling complex data systems, reporting, and task coordination with absolute precision.",
+    bgImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "02",
+    slug: "customer-service",
+    title: "Customer Service",
+    desc: "Handling client inquiries and maintaining high satisfaction operations seamlessly.",
+    bgImage: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "03",
+    slug: "operations",
+    title: "Export Import",
+    desc: "Managing international supply chains, customs, and global logistics.",
+    bgImage: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "04",
+    slug: "design",
+    title: "Graphic Design",
+    desc: "Crafting visual identities and modular layout systems that leave a mark.",
+    bgImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "05",
+    slug: "creative",
+    title: "Creative Content",
+    desc: "Producing digital media assets and structured presentation layouts.",
+    bgImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "06",
+    slug: "web-dev",
+    title: "Web Development",
+    desc: "Developing high-performance applications with headless architecture.",
+    bgImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop"
+  },
+  {
+    num: "07",
+    slug: "translation",
+    title: "Technical Translation",
+    desc: "Bridging complex technical documentation and legal contexts accurately.",
+    bgImage: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=1200&auto=format&fit=crop"
+  }
+];
+---
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+         url('/fonts/Satoshi-Regular.woff2') format('woff2');
+    font-weight: 300 900;
+    font-display: swap;
+  }
+
+  .font-instrument { font-family: 'Instrument Serif', serif; }
+  .font-satoshi { font-family: 'Satoshi', sans-serif; }
+
+  /* ── BACKGROUND UTAMA (Clean White/Slate Theme) ── */
+  .stack-section-wrapper {
+    background-color: #f8fafc; /* Warna terang bersih menyatu dengan web lu */
+    position: relative;
+  }
+
+  /* ── DOTS NAVIGATION ── */
+  .scroll-dots-container {
+    position: fixed;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+
+  @media (min-width: 1024px) {
+    .stack-section-wrapper.is-in-view .scroll-dots-container { 
+      opacity: 1; 
+      visibility: visible;
+    }
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #cbd5e1;
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+
+  .nav-dot.active {
+    background-color: #0f172a;
+  }
+  .nav-dot.active::after {
+    content: ''; 
+    position: absolute; 
+    top: -8px; left: -8px; right: -8px; bottom: -8px;
+    border: 2px solid #0f172a;
+    border-radius: 50%; 
+  }
+
+  /* ── HERO HEADER ── */
+  .hero-header {
+    height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+    color: #0f172a; /* Teks jadi gelap pekat biar elegan di bg terang */
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    max-width: 800px;
+  }
+
+  @media (min-width: 768px) { .hero-title { font-size: 6rem; } }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    color: #475569;
+    font-weight: 400;
+  }
+
+  /* ── CARDS CONTAINER ── */
+  .cards-container {
+    width: 100%;
+  }
+
+  /* 1. WRAPPER STICKY (Bukan tag A lagi) */
+  .card-sticky-wrapper {
+    position: sticky;
+    top: 0;
+    height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    z-index: var(--card-index);
+  }
+
+  /* 2. INNER CARD */
+  .card-inner {
+    width: 100%;
+    max-width: 1100px;
+    height: 85vh; 
+    background-color: #ffffff; /* Kartu jadi putih bersih */
+    border-radius: 28px;
+    border: 1px solid rgba(15, 23, 42, 0.08); /* Border tipis elegan */
+    box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.03); /* Shadow halus */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    
+    transform-origin: top center;
+    will-change: transform, opacity, filter;
+  }
+
+  /* ── LAYOUT DALAM KARTU ── */
+  .card-top-row {
+    display: flex;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .card-title-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 32px 48px;
+    border-right: 1px solid rgba(15, 23, 42, 0.08);
+    gap: 20px;
+  }
+
+  .card-number {
+    font-size: 20px;
+    font-weight: 500;
+    color: #64748b;
+    padding-top: 10px; 
+  }
+
+  .card-title {
+    font-size: 5rem;
+    font-weight: 300;
+    color: #0f172a;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  /* KOTAK PANAH (Sekarang ini tag <a> yg bisa diklik) */
+  .card-arrow-box {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #475569;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  
+  .card-arrow-box:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  .card-arrow-box svg {
+    width: 36px; height: 36px;
+    stroke-width: 1.5px;
+    transition: transform 0.3s ease;
+  }
+  .card-arrow-box:hover svg {
+    transform: translate(4px, -4px);
+  }
+
+  .card-bottom-row { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  @media (min-width: 1024px) { .card-bottom-row { flex-direction: row; } }
+
+  .card-desc-box {
+    flex: 1;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .card-desc {
+    font-size: 22px;
+    line-height: 1.5;
+    color: #475569;
+    font-weight: 400;
+  }
+
+  /* TOMBOL EXPLORE DARI USER (Tag <a> yang bisa diklik) */
+  .explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px 12px 24px;
+    text-decoration: none;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff; /* Teks putih karena bg gelap */
+    cursor: pointer;
+
+    /* SUNTIKAN CSS PREMIUM USER */
+    transition: transform 0.12s, filter 0.2s;
+    transform: translate(2.9px, 0.3px);
+    background: linear-gradient(127deg, rgb(14, 28, 41) -68%, rgb(50, 61, 104) 100%);
+    border-radius: 10px;
+    box-shadow: 
+      rgb(184, 193, 230) 0px 1px 2px 0px inset, 
+      rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px, 
+      rgba(46, 64, 128, 0.34) 0px 1.80656px 1.80656px -1.16667px, 
+      rgba(46, 64, 128, 0.33) 0px 3.62176px 3.62176px -1.75px, 
+      rgba(46, 64, 128, 0.3) 0px 6.8656px 6.8656px -2.33333px, 
+      rgba(46, 64, 128, 0.26) 0px 13.6468px 13.6468px -2.91667px, 
+      rgba(46, 64, 128, 0.15) 0px 30px 30px -3.5px;
+  }
+
+  .explore-btn:hover {
+    filter: brightness(1.15);
+  }
+  
+  .explore-btn:active {
+    transform: translate(2.9px, 2.9px); /* Efek kedorong ke bawah pas diklik */
+    box-shadow: 
+      rgb(184, 193, 230) 0px 1px 2px 0px inset, 
+      rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px;
+  }
+
+  .btn-icon {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card-img-box {
+    flex: 1;
+    padding: 32px 48px 48px 0; 
+    min-height: 0; 
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media (max-width: 1023px) {
+    .card-title-box { padding: 24px; flex-direction: row; gap: 16px; border-right: none; }
+    .card-title { font-size: 3.5rem; }
+    .card-top-row { flex-direction: column; }
+    .card-arrow-box { width: 100%; height: 60px; border-top: 1px solid rgba(15, 23, 42, 0.08); }
+    .card-desc-box { padding: 24px; gap: 24px; }
+    .card-desc { font-size: 18px; }
+    .card-img-box { padding: 0 24px 24px 24px; flex: auto; min-height: 250px; }
+  }
+</style>
+
+<section class="stack-section-wrapper font-satoshi" id="expertise-section">
+  
+  <div class="scroll-dots-container" id="dots-nav">
+    {categories.map((_, i) => (
+      <div class="nav-dot" data-dot-index={i}></div>
+    ))}
+  </div>
+
+  <div class="hero-header">
+    <h1 class="font-instrument hero-title">
+      Where most see limits,<br>
+      <span class="italic text-slate-400">I envision pathways.</span>
+    </h1>
+    <p class="hero-subtitle">Connecting visionary minds to rare opportunities is what drives me.</p>
+  </div>
+
+  <div class="cards-container">
+    {categories.map((cat, index) => (
+      <div 
+        class="card-sticky-wrapper" 
+        style={`--card-index: ${index}; z-index: ${index};`}
+        data-card-index={index}
+      >
+        <div class="card-inner">
+          <div class="card-top-row">
+            <div class="card-title-box">
+              <span class="card-number">{cat.num}.</span>
+              <h2 class="font-satoshi card-title">{cat.title}</h2>
+            </div>
+            <a href={`/${cat.slug}`} class="card-arrow-box" aria-label={`Go to ${cat.title}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+
+          <div class="card-bottom-row">
+            <div class="card-desc-box">
+              <p class="card-desc">{cat.desc}</p>
+              
+              <a href={`/${cat.slug}`} class="explore-btn">
+                Explore Role
+                <div class="btn-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </a>
+
+            </div>
+            <div class="card-img-box">
+              <img src={cat.bgImage} alt={cat.title} class="card-img" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sectionWrapper = document.getElementById('expertise-section');
+    const wrappers = document.querySelectorAll('.card-sticky-wrapper');
+    const dots = document.querySelectorAll('.nav-dot');
+
+    if (!sectionWrapper || wrappers.length === 0) return;
+
+    const wrapperObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sectionWrapper.classList.add('is-in-view');
+        } else {
+          sectionWrapper.classList.remove('is-in-view');
+        }
+      });
+    }, { threshold: 0.1 });
+    wrapperObserver.observe(sectionWrapper);
+
+    let ticking = false;
+    
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+
+      wrappers.forEach((wrapper, index) => {
+        const innerCard = wrapper.querySelector('.card-inner') as HTMLElement;
+        const rect = wrapper.getBoundingClientRect();
+        
+        // Logika Dot Active Tracker
+        if (rect.top <= windowHeight * 0.5 && rect.bottom >= windowHeight * 0.5) {
+           dots.forEach(d => d.classList.remove('active'));
+           const activeDot = document.querySelector(`.nav-dot[data-dot-index="${index}"]`);
+           if(activeDot) activeDot.classList.add('active');
+        }
+
+        if (!innerCard) return;
+
+        if (index === wrappers.length - 1) {
+          innerCard.style.opacity = '1';
+          innerCard.style.transform = 'scale(1) translateY(0)';
+          innerCard.style.filter = 'blur(0)';
+          return;
+        }
+
+        const nextWrapper = wrappers[index + 1];
+        const nextRect = nextWrapper.getBoundingClientRect();
+        
+        const distanceToCover = nextRect.top;
+
+        if (distanceToCover <= 0) {
+          innerCard.style.opacity = '0';
+          innerCard.style.transform = 'scale(0.8) translateY(-40px)';
+          innerCard.style.filter = 'blur(10px)';
+        } else if (distanceToCover < windowHeight) {
+          let rawProgress = 1 - (distanceToCover / windowHeight);
+          let easeProgress = rawProgress * rawProgress; 
+
+          let opacity = Math.max(0, 1 - (easeProgress * 2)); 
+          let scale = 1 - (easeProgress * 0.15); 
+          let yOffset = easeProgress * -40; 
+          let blurAmount = easeProgress * 10; 
+
+          innerCard.style.opacity = opacity.toString();
+          innerCard.style.transform = `scale(${scale}) translateY(${yOffset}px)`;
+          innerCard.style.filter = `blur(${blurAmount}px)`;
+        } else {
+          innerCard.style.opacity = '1';
+          innerCard.style.transform = 'scale(1) translateY(0)';
+          innerCard.style.filter = 'blur(0)';
+        }
+      });
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    });
+    
+    handleScroll(); 
+  });
+</script>

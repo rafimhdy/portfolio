@@ -1,0 +1,121 @@
+---
+// src/components/Navbar.astro
+const { isPage = false } = Astro.props;
+---
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
+
+  .font-inter-nav {
+    font-family: 'Inter', sans-serif !important;
+  }
+  /* 1. INDUK DOCK BAR UTAMA (Dibuat lebih pipih melar horizontal) */
+  .framer-dock-nav {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: linear-gradient(180deg, rgba(14, 28, 41, 0.5) -53%, rgb(14, 28, 41) 100%);
+    border-radius: 100px;
+    box-shadow:
+      rgba(0, 0, 0, 0.28) 0px 0.706592px 0.706592px -0.583333px,
+      rgba(0, 0, 0, 0.27) 0px 1.80656px 1.80656px -1.16667px,
+      rgba(0, 0, 0, 0.26) 0px 3.62176px 3.62176px -1.75px,
+      rgba(0, 0, 0, 0.24) 0px 6.8656px 6.8656px -2.33333px,
+      rgba(0, 0, 0, 0.21) 0px 13.6468px 13.6468px -2.91667px,
+      rgba(0, 0, 0, 0.12) 0px 30px 30px -3.5px,
+      rgba(255, 255, 255, 0.15) 0px 0px 0px 2px inset;
+    opacity: 1;
+    z-index: 999 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    /* Jarak antar menu diatur renggang proporsional */
+    gap: 12px !important;
+
+    /* FIX KUNCI: Paksa lebar dinamis agar bar memanjang pipih, bukan membulat bantet */
+    width: max-content !important;
+    min-width: 380px; /* Batas minimal panjang biar gak keliatan bulat bantet */
+    padding: 8px 10px 8px 24px !important; /* Atas-bawah tipis (8px) bikin efek pipih melar */
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 2. TOMBOL MENU ANAK */
+  .framer-nav-item {
+    cursor: pointer;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 6px 14px !important; /* Padding teks menu */
+    text-decoration: none !important;
+    border-radius: 0px;
+    opacity: 1;
+    white-space: nowrap !important;
+
+    /* Reset Typography murni dari preset */
+    font-family: "Inter", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    line-height: 120%;
+    color: rgb(255, 255, 255) !important;
+    transition: opacity 0.2s ease;
+  }
+
+  .framer-nav-item:hover {
+    opacity: 0.7;
+  }
+
+  /* 3. TOMBOL PREMIUM HIRE ME (Fix: Kunci text-nowrap agar tidak pecah ke bawah) */
+  .framer-pill-btn {
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* FIX UTAMA: Gunakan padding pasti, buang min-content agar teks tetap segaris lurus horisontal */
+    padding: 8px 20px !important;
+    white-space: nowrap !important; /* Melarang teks turun ke bawah */
+    margin-left: auto; /* Dorong tombol ke ujung paling kanan bar */
+
+    border-radius: 100px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    box-shadow: rgba(255, 255, 255, 0.12) 0px 0px 0px 1px inset;
+
+    font-family: "Inter", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 100%;
+    color: rgb(255, 255, 255) !important;
+    text-decoration: none !important;
+    transition: filter 0.2s ease;
+  }
+
+  .framer-pill-btn:hover {
+    filter: brightness(1.2);
+  }
+</style>
+
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-999 antialiased">
+  <nav class="framer-dock-nav font-inter-nav">
+
+    { !isPage ? (
+      <>
+        <a href="#" class="framer-nav-item">Home</a>
+        <a href="#lanes" class="framer-nav-item">Expertise</a>
+        <a href="#contact" class="framer-nav-item">Contact</a>
+      </>
+    ) : (
+      <>
+        <a href="#" class="framer-nav-item">Profile</a>
+        <a href="#projects" class="framer-nav-item">Projects</a>
+        <a href="#tools" class="framer-nav-item">Tools</a>
+        <a href="#contact" class="framer-nav-item">Contact</a>
+      </>
+    ) }
+
+    <a href="mailto:rafi@quansel.com" class="framer-pill-btn">
+      Hire Me
+    </a>
+
+  </nav>
+</div>

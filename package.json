@@ -12,6 +12,19 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.4.4"
+    "@astrojs/react": "^5.0.7",
+    "@portabletext/react": "^6.2.0",
+    "@sanity/astro": "^3.4.0",
+    "@sanity/client": "^7.22.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^6.4.4",
+    "framer-motion": "^12.40.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-is": "^19.2.7",
+    "sanity": "^5.30.0",
+    "sanity-plugin-inline-svg": "^1.0.3",
+    "styled-components": "^6.4.2"
   }
 }

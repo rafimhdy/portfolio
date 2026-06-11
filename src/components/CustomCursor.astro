@@ -1,0 +1,71 @@
+---
+---
+<style>
+  .cursor-follower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background: #0f172a; /* Warna dongker biar elegan */
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference; /* Efek magic: warna berubah otomatis lawan background */
+    transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease;
+    will-change: transform;
+  }
+
+  /* Efek pas hover tombol/link */
+  .cursor-hover {
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+  }
+</style>
+
+<div class="cursor-follower" id="cursor"></div>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!cursor || !finePointer || reducedMotion) {
+    cursor?.remove();
+  } else {
+    let pendingFrame = 0;
+    let nextX = 0;
+    let nextY = 0;
+
+    const updateCursor = () => {
+      cursor.style.transform = `translate3d(${nextX}px, ${nextY}px, 0)`;
+      pendingFrame = 0;
+    };
+
+    window.addEventListener('pointermove', (event) => {
+      nextX = event.clientX - 10;
+      nextY = event.clientY - 10;
+
+      if (!pendingFrame) {
+        pendingFrame = window.requestAnimationFrame(updateCursor);
+      }
+    }, { passive: true });
+
+    window.addEventListener('pointerover', (event) => {
+      const target = event.target.closest('a, button');
+
+      if (target) {
+        cursor.classList.add('cursor-hover');
+      }
+    }, { passive: true });
+
+    window.addEventListener('pointerout', (event) => {
+      const target = event.target.closest('a, button');
+
+      if (target) {
+        cursor.classList.remove('cursor-hover');
+      }
+    }, { passive: true });
+  }
+</script>

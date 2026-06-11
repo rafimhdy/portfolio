@@ -1,0 +1,26 @@
+---
+interface Props {
+  introText: string;
+}
+const { introText } = Astro.props;
+---
+
+<style>
+  .intro-copy {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(18px, 1.45vw, 21px);
+    line-height: 1.58;
+    letter-spacing: -0.022em;
+    color: #223044;
+    max-width: 980px;
+    margin: 0 0 34px;
+  }
+
+  .dashed-divider {
+    border: 0;
+    border-top: 1px dashed rgba(100, 116, 139, 0.45);
+    margin: 0 0 34px;
+  }
+</style>
+
+<p class="intro-copy">{introText}</p>

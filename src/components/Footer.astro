@@ -1,0 +1,221 @@
+---
+// src/components/Footer.astro
+---
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
+  /* FONT IMPORTS - Pastikan di BaseLayout sudah ada */
+  .font-serif-instrument { font-family: 'Instrument Serif', serif; }
+  .font-sans-inter { font-family: 'Inter', sans-serif; }
+
+  .footer-breakout {
+    position: relative;
+    /* JURUS ANTI-GAP: Memastikan breakout mentok kanan-kiri */
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    
+    /* Tinggi footer disesuaikan agar proporsional */
+    height: 100dvh;
+    background-color: #f9fbfd;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Memastikan nempel ke bawah */
+    margin-bottom: -40px; /* Offset padding dari main container jika ada */
+  }
+
+  .video-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .nature-video {
+    width: 100%;
+    height: 100%;
+    /* LOCK KE BAWAH: object-position bottom penting banget */
+    object-fit: cover;
+    object-position: bottom;
+    display: block;
+  }
+
+  /* GRADIENT OVERLAY - Biar teks kebaca dan transisi smooth */
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      to bottom, 
+      #F6F9FC 0%, 
+      rgba(249, 251, 253, 0.5) 20%,
+      transparent 50%,
+      rgba(15, 23, 42, 0.05) 100%
+    );
+  }
+
+  .footer-content {
+    position: relative;
+    z-index: 10;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10dvh 6vw 5dvh;
+  }
+
+  /* TEXT LAYOUT: Editorial Style */
+  .text-wrap {
+    max-width: 900px;
+  }
+
+  .editorial-title {
+    color: #0f172a;
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    line-height: 5.5rem;
+  }
+
+  .editorial-title i {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: #00000065;
+  }
+
+  .sub-info {
+    margin-top: 40px;
+    display: flex;
+    gap: 80px;
+    align-items: flex-start;
+  }
+
+  .info-block p {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  .info-block span {
+    font-size: 16px;
+    color: #1e293b;
+    display: block;
+  }
+
+  /* BOTTOM NAVIGATION */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 40px;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .copyright {
+    font-size: 12px;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #0f172a;
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .footer-breakout { height: 85dvh; }
+    .editorial-title { font-size: 4rem; }
+    .sub-info { flex-direction: column; gap: 30px; }
+    .footer-bottom { flex-direction: column-reverse; align-items: flex-start; gap: 30px; }
+  }
+</style>
+
+<div class="footer-breakout font-sans-inter">
+  
+  <div class="video-container">
+    <div class="video-overlay"></div>
+    <video 
+      autoplay 
+      loop 
+      muted 
+      playsinline 
+      class="nature-video"
+    >
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260424_064411_9e9d7f84-9277-41f4-ab10-59172d89e6be.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <footer class="footer-content">
+    
+    <div class="text-wrap">
+      <h2 class="editorial-title text-7xl md:text-[5rem]">
+        <i>Muhammad Rafi<br/>Mahdy.</i>
+      </h2>
+      
+      <div class="sub-info">
+        <div class="info-block">
+          <p>The Approach</p>
+          <span>Crafting digital metaphors<br/>through code and nature.</span>
+        </div>
+        <div class="info-block">
+          <p>Local Time</p>
+          <span id="footer-time">00:00 AM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="copyright">
+        RAFI MAHDY — © {new Date().getFullYear()} / ALL RIGHTS RESERVED
+      </div>
+      
+      <div class="nav-links">
+        <a href="#profile" class="nav-link">Top</a>
+        <a href="mailto:hello@rafimahdy.com" class="nav-link">Email</a>
+        <a href="https://linkedin.com" target="_blank" class="nav-link">LinkedIn</a>
+      </div>
+    </div>
+
+  </footer>
+</div>
+
+<script>
+  // Update jam biar kerasa "hidup"
+  function updateTime() {
+    const timeEl = document.getElementById('footer-time');
+    if (!timeEl) return;
+    const now = new Date();
+    timeEl.innerText = now.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+</script>
