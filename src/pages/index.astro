@@ -10,21 +10,21 @@ import Footer from '../components/Footer.astro';
 
 ---
 
-<script is:inline>
-      const urlParams = new URLSearchParams(window.location.search);
-      const lastPage = sessionStorage.getItem('last_competency_page');
-      
-      // 1. Mantra bypass buat lu pas testing/kerja di web live
-      if (urlParams.get('owner') === 'rafi') {
-        sessionStorage.removeItem('last_competency_page');
-      } 
-      // 2. Skrip pengunci (Hanya aktif di server live, di localhost lu tetep bebas bergerak)
-      else if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        if (lastPage) {
-          window.location.href = lastPage;
-        }
+<Fragment slot="head">
+  <script is:inline>
+    const urlParams = new URLSearchParams(window.location.search);
+    const lastPage = sessionStorage.getItem('last_competency_page');
+    
+    if (urlParams.get('owner') === 'rafi') {
+      sessionStorage.removeItem('last_competency_page');
+    } 
+    else if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      if (lastPage) {
+        window.location.href = lastPage;
       }
-    </script>
+    }
+  </script>
+</Fragment>
 
 <BaseLayout title="Home | Muhammad Rafi Mahdy">
   <Hero />
