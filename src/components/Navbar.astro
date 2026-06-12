@@ -198,9 +198,30 @@ const { isPage = false } = Astro.props;
       </>
     )}
 
-    <a href="mailto:rafi@quansel.com" class="framer-pill-btn">
-      Hire Me
-    </a>
+    <a id="secure-hire-btn" class="framer-pill-btn cursor-pointer">
+  Hire Me
+</a>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const hireBtn = document.getElementById('secure-hire-btn');
+    if (!hireBtn) return;
+
+    // Fungsi rahasia untuk merakit dan mengeksekusi mailto
+    function openSecureEmail(e) {
+      e.preventDefault(); // Mencegah aksi default browser
+      
+      const user = "hello";
+      const domain = "mrafimahdy.works";
+      
+      // Detik di mana user meng-klik tombol, browser baru dipaksa membuka aplikasi email
+      window.location.href = "mailto:" + user + "@" + domain;
+    }
+
+    // Eksekusi hanya saat tombol bener-bener di-klik (Bisa di PC maupun di HP)
+    hireBtn.addEventListener('click', openSecureEmail);
+  });
+</script>
 
   </nav>
 </div>
