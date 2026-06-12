@@ -3,6 +3,8 @@
 
 import CustomCursor from '../components/CustomCursor.astro';
 import Preloader from '../components/Preloader.astro'; // <-- Import Preloader di sini
+import Analytics from '@vercel/analytics/astro'
+import SpeedInsights from "@vercel/speed-insights/astro"
 const { title = "Rafi Portfolio" } = Astro.props;
 ---
 
@@ -130,5 +132,7 @@ const { title = "Rafi Portfolio" } = Astro.props;
     sessionStorage.setItem('last_competency_page', currentPath);
   }
 </script>
+<Analytics />
+<SpeedInsights />
   </body>
 </html>
