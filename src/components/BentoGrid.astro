@@ -65,15 +65,15 @@ const categories = [
   }
 
   .font-instrument { font-family: 'Instrument Serif', serif; }
-  .font-satoshi { font-family: 'Satoshi', sans-serif; }
+  .font-satoshi    { font-family: 'Satoshi', sans-serif; }
 
-  /* ── BACKGROUND UTAMA (Clean White/Slate Theme) ── */
+  /* ── WRAPPER ── */
   .stack-section-wrapper {
-    background-color: #f8fafc; /* Warna terang bersih menyatu dengan web lu */
+    background-color: #f8fafc;
     position: relative;
   }
 
-  /* ── DOTS NAVIGATION ── */
+  /* ── DOTS NAV — desktop only, unchanged ── */
   .scroll-dots-container {
     position: fixed;
     left: 40px;
@@ -91,8 +91,8 @@ const categories = [
   }
 
   @media (min-width: 1024px) {
-    .stack-section-wrapper.is-in-view .scroll-dots-container { 
-      opacity: 1; 
+    .stack-section-wrapper.is-in-view .scroll-dots-container {
+      opacity: 1;
       visibility: visible;
     }
   }
@@ -105,21 +105,18 @@ const categories = [
     transition: background-color 0.3s ease;
     position: relative;
   }
-
-  .nav-dot.active {
-    background-color: #0f172a;
-  }
+  .nav-dot.active { background-color: #0f172a; }
   .nav-dot.active::after {
-    content: ''; 
-    position: absolute; 
+    content: '';
+    position: absolute;
     top: -8px; left: -8px; right: -8px; bottom: -8px;
     border: 2px solid #0f172a;
-    border-radius: 50%; 
+    border-radius: 50%;
   }
 
-  /* ── HERO HEADER ── */
+  /* ── HERO ── */
   .hero-header {
-    height: 100vh; 
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -129,89 +126,89 @@ const categories = [
   }
 
   .hero-title {
-    font-size: 4rem;
-    color: #0f172a; /* Teks jadi gelap pekat biar elegan di bg terang */
+    font-size: clamp(2.4rem, 7vw, 6rem);
+    color: #0f172a;
     line-height: 1.1;
     letter-spacing: -0.02em;
     margin-bottom: 24px;
     max-width: 800px;
   }
 
-  @media (min-width: 768px) { .hero-title { font-size: 6rem; } }
-
   .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 2vw, 1.25rem);
     color: #475569;
     font-weight: 400;
   }
 
-  /* ── CARDS CONTAINER ── */
-  .cards-container {
-    width: 100%;
-  }
-
-  /* 1. WRAPPER STICKY (Bukan tag A lagi) */
+  /* ── STICKY WRAPPER ── */
   .card-sticky-wrapper {
     position: sticky;
     top: 0;
-    height: 100vh; 
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 24px;
+    padding: 0 16px;          /* was 0 24px — tighter on small screens */
     z-index: var(--card-index);
   }
 
-  /* 2. INNER CARD */
+  /* ── CARD INNER ── */
   .card-inner {
     width: 100%;
     max-width: 1100px;
-    height: 85vh; 
-    background-color: #ffffff; /* Kartu jadi putih bersih */
+    height: 85vh;
+    background-color: #ffffff;
     border-radius: 28px;
-    border: 1px solid rgba(15, 23, 42, 0.08); /* Border tipis elegan */
-    box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.03); /* Shadow halus */
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.03);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    
     transform-origin: top center;
     will-change: transform, opacity, filter;
   }
 
-  /* ── LAYOUT DALAM KARTU ── */
+  /* ─────────────────────────────────────────
+     TOP ROW
+  ───────────────────────────────────────── */
   .card-top-row {
     display: flex;
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    flex-shrink: 0;            /* never squish */
   }
 
   .card-title-box {
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 32px 48px;
+    padding: 24px 32px;        /* slightly tighter than 32/48 */
     border-right: 1px solid rgba(15, 23, 42, 0.08);
-    gap: 20px;
+    gap: 16px;
+    min-width: 0;              /* allow title to shrink */
   }
 
   .card-number {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
     color: #64748b;
-    padding-top: 10px; 
+    padding-top: 8px;
+    flex-shrink: 0;
   }
 
   .card-title {
-    font-size: 5rem;
+    font-size: clamp(1.8rem, 4.5vw, 5rem);
     font-weight: 300;
     color: #0f172a;
     line-height: 1;
     letter-spacing: -0.04em;
+    white-space: nowrap;       /* keep on one line; shrinks via clamp */
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* KOTAK PANAH (Sekarang ini tag <a> yg bisa diklik) */
+  /* Arrow box — desktop width, mobile becomes icon bar */
   .card-arrow-box {
-    width: 120px;
+    width: 80px;               /* was 120px */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -221,42 +218,58 @@ const categories = [
     cursor: pointer;
     transition: background 0.3s ease, color 0.3s ease;
   }
-  
   .card-arrow-box:hover {
     background: #f1f5f9;
     color: #0f172a;
   }
-
   .card-arrow-box svg {
-    width: 36px; height: 36px;
+    width: 30px; height: 30px;
     stroke-width: 1.5px;
     transition: transform 0.3s ease;
   }
-  .card-arrow-box:hover svg {
-    transform: translate(4px, -4px);
+  .card-arrow-box:hover svg { transform: translate(4px, -4px); }
+
+  /* ─────────────────────────────────────────
+     BOTTOM ROW
+  ───────────────────────────────────────── */
+  .card-bottom-row {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;    /* mobile: stack */
   }
 
-  .card-bottom-row { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-  @media (min-width: 1024px) { .card-bottom-row { flex-direction: row; } }
+  @media (min-width: 768px) {
+    .card-bottom-row { flex-direction: row; }
+  }
 
+  /* Desc box */
   .card-desc-box {
-    flex: 1;
-    padding: 40px 48px;
+    flex: 0 0 auto;
+    padding: 28px 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 40px;
+    gap: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .card-desc-box {
+      flex: 1;
+      padding: 36px 48px;
+      gap: 36px;
+    }
   }
 
   .card-desc {
-    font-size: 22px;
-    line-height: 1.5;
+    font-size: clamp(15px, 2vw, 22px);
+    line-height: 1.55;
     color: #475569;
     font-weight: 400;
   }
 
-  /* TOMBOL EXPLORE DARI USER (Tag <a> yang bisa diklik) */
+  /* Explore button — unchanged styles */
   .explore-btn {
     display: inline-flex;
     align-items: center;
@@ -266,32 +279,26 @@ const categories = [
     font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     font-weight: 500;
-    color: #ffffff; /* Teks putih karena bg gelap */
+    color: #ffffff;
     cursor: pointer;
-
-    /* SUNTIKAN CSS PREMIUM USER */
     transition: transform 0.12s, filter 0.2s;
     transform: translate(2.9px, 0.3px);
     background: linear-gradient(127deg, rgb(14, 28, 41) -68%, rgb(50, 61, 104) 100%);
     border-radius: 10px;
-    box-shadow: 
-      rgb(184, 193, 230) 0px 1px 2px 0px inset, 
-      rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px, 
-      rgba(46, 64, 128, 0.34) 0px 1.80656px 1.80656px -1.16667px, 
-      rgba(46, 64, 128, 0.33) 0px 3.62176px 3.62176px -1.75px, 
-      rgba(46, 64, 128, 0.3) 0px 6.8656px 6.8656px -2.33333px, 
-      rgba(46, 64, 128, 0.26) 0px 13.6468px 13.6468px -2.91667px, 
+    box-shadow:
+      rgb(184, 193, 230) 0px 1px 2px 0px inset,
+      rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px,
+      rgba(46, 64, 128, 0.34) 0px 1.80656px 1.80656px -1.16667px,
+      rgba(46, 64, 128, 0.33) 0px 3.62176px 3.62176px -1.75px,
+      rgba(46, 64, 128, 0.3) 0px 6.8656px 6.8656px -2.33333px,
+      rgba(46, 64, 128, 0.26) 0px 13.6468px 13.6468px -2.91667px,
       rgba(46, 64, 128, 0.15) 0px 30px 30px -3.5px;
   }
-
-  .explore-btn:hover {
-    filter: brightness(1.15);
-  }
-  
+  .explore-btn:hover { filter: brightness(1.15); }
   .explore-btn:active {
-    transform: translate(2.9px, 2.9px); /* Efek kedorong ke bawah pas diklik */
-    box-shadow: 
-      rgb(184, 193, 230) 0px 1px 2px 0px inset, 
+    transform: translate(2.9px, 2.9px);
+    box-shadow:
+      rgb(184, 193, 230) 0px 1px 2px 0px inset,
       rgba(46, 64, 128, 0.35) 0px 0.706592px 0.706592px -0.583333px;
   }
 
@@ -300,33 +307,69 @@ const categories = [
     display: flex; align-items: center; justify-content: center;
   }
 
+  /* Image box */
   .card-img-box {
     flex: 1;
-    padding: 32px 48px 48px 0; 
-    min-height: 0; 
+    min-height: 0;
+    padding: 0 16px 16px;      /* mobile: symmetric padding */
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .card-img-box {
+      padding: 24px 40px 40px 0;
+    }
   }
 
   .card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: 14px;
+    display: block;
   }
 
-  /* ── MOBILE RESPONSIVE ── */
-  @media (max-width: 1023px) {
-    .card-title-box { padding: 24px; flex-direction: row; gap: 16px; border-right: none; }
-    .card-title { font-size: 3.5rem; }
-    .card-top-row { flex-direction: column; }
-    .card-arrow-box { width: 100%; height: 60px; border-top: 1px solid rgba(15, 23, 42, 0.08); }
-    .card-desc-box { padding: 24px; gap: 24px; }
-    .card-desc { font-size: 18px; }
-    .card-img-box { padding: 0 24px 24px 24px; flex: auto; min-height: 250px; }
+  /* ─────────────────────────────────────────
+     SMALL PHONE  (< 480px)
+     Card height: fill viewport minus a tiny
+     inset so stacking is still visible.
+  ───────────────────────────────────────── */
+  @media (max-width: 479px) {
+    .card-sticky-wrapper { padding: 0 10px; }
+
+    .card-inner {
+      height: 88vh;
+      border-radius: 20px;
+    }
+
+    .card-title-box {
+      padding: 16px 18px;
+      gap: 10px;
+      /* hide border-right on small — no room */
+      border-right: none;
+    }
+
+    /* Arrow box moves below title on tiny screens */
+    .card-top-row { flex-wrap: wrap; }
+
+    .card-arrow-box {
+      width: 56px;
+      height: 56px;
+      border-left: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .card-number { font-size: 14px; padding-top: 4px; }
+
+    .card-desc-box { padding: 16px 18px; gap: 16px; }
+
+    .card-img-box { padding: 0 12px 12px; }
+
+    .card-img { border-radius: 10px; }
   }
 </style>
 
 <section class="stack-section-wrapper font-satoshi" id="expertise-section">
-  
+
   <div class="scroll-dots-container" id="dots-nav">
     {categories.map((_, i) => (
       <div class="nav-dot" data-dot-index={i}></div>
@@ -343,8 +386,8 @@ const categories = [
 
   <div class="cards-container">
     {categories.map((cat, index) => (
-      <div 
-        class="card-sticky-wrapper" 
+      <div
+        class="card-sticky-wrapper"
         style={`--card-index: ${index}; z-index: ${index};`}
         data-card-index={index}
       >
@@ -364,7 +407,6 @@ const categories = [
           <div class="card-bottom-row">
             <div class="card-desc-box">
               <p class="card-desc">{cat.desc}</p>
-              
               <a href={`/${cat.slug}`} class="explore-btn">
                 Explore Role
                 <div class="btn-icon">
@@ -373,7 +415,6 @@ const categories = [
                   </svg>
                 </div>
               </a>
-
             </div>
             <div class="card-img-box">
               <img src={cat.bgImage} alt={cat.title} class="card-img" loading="lazy" />
@@ -405,19 +446,18 @@ const categories = [
     wrapperObserver.observe(sectionWrapper);
 
     let ticking = false;
-    
+
     const handleScroll = () => {
       const windowHeight = window.innerHeight;
 
       wrappers.forEach((wrapper, index) => {
         const innerCard = wrapper.querySelector('.card-inner') as HTMLElement;
         const rect = wrapper.getBoundingClientRect();
-        
-        // Logika Dot Active Tracker
+
         if (rect.top <= windowHeight * 0.5 && rect.bottom >= windowHeight * 0.5) {
-           dots.forEach(d => d.classList.remove('active'));
-           const activeDot = document.querySelector(`.nav-dot[data-dot-index="${index}"]`);
-           if(activeDot) activeDot.classList.add('active');
+          dots.forEach(d => d.classList.remove('active'));
+          const activeDot = document.querySelector(`.nav-dot[data-dot-index="${index}"]`);
+          if (activeDot) activeDot.classList.add('active');
         }
 
         if (!innerCard) return;
@@ -431,7 +471,6 @@ const categories = [
 
         const nextWrapper = wrappers[index + 1];
         const nextRect = nextWrapper.getBoundingClientRect();
-        
         const distanceToCover = nextRect.top;
 
         if (distanceToCover <= 0) {
@@ -440,12 +479,12 @@ const categories = [
           innerCard.style.filter = 'blur(10px)';
         } else if (distanceToCover < windowHeight) {
           let rawProgress = 1 - (distanceToCover / windowHeight);
-          let easeProgress = rawProgress * rawProgress; 
+          let easeProgress = rawProgress * rawProgress;
 
-          let opacity = Math.max(0, 1 - (easeProgress * 2)); 
-          let scale = 1 - (easeProgress * 0.15); 
-          let yOffset = easeProgress * -40; 
-          let blurAmount = easeProgress * 10; 
+          let opacity = Math.max(0, 1 - (easeProgress * 2));
+          let scale = 1 - (easeProgress * 0.15);
+          let yOffset = easeProgress * -40;
+          let blurAmount = easeProgress * 10;
 
           innerCard.style.opacity = opacity.toString();
           innerCard.style.transform = `scale(${scale}) translateY(${yOffset}px)`;
@@ -465,7 +504,7 @@ const categories = [
         ticking = true;
       }
     });
-    
-    handleScroll(); 
+
+    handleScroll();
   });
 </script>

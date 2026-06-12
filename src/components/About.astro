@@ -11,24 +11,17 @@ const words = aboutText.split(" ");
   .font-instrument { font-family: 'Instrument Serif', serif; }
   .font-inter      { font-family: 'Inter', sans-serif; }
 
-  /* ── 1. SCROLL TRACK — full-bleed, background di sini ─────────── */
+  /* ── 1. SCROLL TRACK ── */
   .about-scroll-track {
     position: relative;
     height: 500vh;
     overflow: clip;
-
-    /*
-      Full-bleed breakout dari parent container yang punya max-width/padding.
-      Teknik: geser kiri sejauh selisih viewport vs element width.
-    */
     width: 100vw;
     margin-left: calc(-50vw + 50%);
-
-    /* Background ditaruh di track (bukan viewport) supaya mengisi 500vh penuh */
     background-color: #f8f7f5;
   }
 
-  /* ── 2. STICKY VIEWPORT — transparent, opacity dihandle JS ─────── */
+  /* ── 2. STICKY VIEWPORT ── */
   .about-sticky-viewport {
     position: sticky;
     top: 0;
@@ -39,26 +32,21 @@ const words = aboutText.split(" ");
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    /*
-      Tidak ada background di sini — biar track yang cover.
-      Opacity awal 0, JS yang fade in/out untuk transisi mulus antar section.
-    */
     opacity: 0;
     will-change: opacity;
   }
 
-  /* ── 3. AMBIENT ORB ────────────────────────────────────────────── */
+  /* ── 3. AMBIENT ORB ── */
   .about-ambient-orb {
     position: absolute;
     z-index: 1;
-    width: clamp(500px, 65vw, 850px);
-    height: clamp(500px, 65vw, 850px);
+    width: clamp(320px, 65vw, 850px);
+    height: clamp(320px, 65vw, 850px);
     border-radius: 50%;
     background: radial-gradient(
       circle at center,
-      rgba(63, 197, 255, 0.3) 0%,
-      rgba(128, 198, 255, 0.22) 40%,
+      rgba(63, 197, 255, 0.28) 0%,
+      rgba(128, 198, 255, 0.18) 40%,
       transparent 68%
     );
     pointer-events: none;
@@ -68,7 +56,7 @@ const words = aboutText.split(" ");
     transform: translate(-50%, -50%);
   }
 
-  /* ── 4. CORNER INFO — top-right ────────────────────────────────── */
+  /* ── 4. CORNER INFO — top-right, desktop only ── */
   .about-corner-info {
     position: absolute;
     top: clamp(28px, 4vh, 52px);
@@ -82,13 +70,13 @@ const words = aboutText.split(" ");
     font-size: 9px;
     font-weight: 400;
     letter-spacing: 0.22em;
-    color: rgba(15, 23, 42, 0.6);
+    color: rgba(15, 23, 42, 0.5);
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
     line-height: 1.8;
   }
 
-  /* ── 5. SCROLL PROGRESS BAR — right edge ──────────────────────── */
+  /* ── 5. PROGRESS BAR — right edge, desktop only ── */
   .about-progress-bar {
     position: absolute;
     right: clamp(18px, 2.5vw, 32px);
@@ -118,8 +106,7 @@ const words = aboutText.split(" ");
   }
   .progress-fill {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     width: 100%;
     height: 0%;
     background: rgba(15, 23, 42, 0.3);
@@ -127,33 +114,33 @@ const words = aboutText.split(" ");
     will-change: height;
   }
 
-  /* ── 6. TEXT CONTAINER ─────────────────────────────────────────── */
+  /* ── 6. TEXT CONTAINER ── */
   .about-text-container {
     position: relative;
     z-index: 30;
-    max-width: 700px;
+    max-width: 680px;
     width: 100%;
-    padding: 0 52px;
+    padding: 0 clamp(20px, 5vw, 52px);
     box-sizing: border-box;
     text-align: center;
     pointer-events: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: clamp(24px, 3.5vh, 40px);
   }
 
   .reveal-text-block {
     text-align: center;
-    font-size: clamp(23px, 2.35vw, 36px);
+    font-size: clamp(18px, 3.2vw, 36px);
     line-height: 1.52;
     letter-spacing: -0.015em;
     font-weight: 400;
     margin: 0;
-    color: rgba(15, 23, 42, 0.07); /* Fallback untuk kata belum aktif */
+    color: rgba(15, 23, 42, 0.07);
   }
 
-  /* ── 7. KATA-KATA ──────────────────────────────────────────────── */
+  /* ── 7. WORDS ── */
   .about-word {
     display: inline-block;
     color: rgba(15, 23, 42, 0.065);
@@ -168,7 +155,7 @@ const words = aboutText.split(" ");
     transform: translate3d(0, -2px, 0);
   }
 
-  /* ── 8. STATS — muncul setelah teks selesai ─────────────────────── */
+  /* ── 8. STATS ── */
   .about-stats {
     display: flex;
     align-items: center;
@@ -188,14 +175,14 @@ const words = aboutText.split(" ");
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    padding: 0 clamp(16px, 2.8vw, 32px);
+    padding: 0 clamp(12px, 2.8vw, 32px);
   }
   .stat-item + .stat-item {
     border-left: 1px solid rgba(15, 23, 42, 0.1);
   }
   .stat-val {
     font-family: 'Instrument Serif', serif;
-    font-size: clamp(16px, 1.6vw, 20px);
+    font-size: clamp(15px, 1.6vw, 20px);
     font-weight: 400;
     color: rgba(15, 23, 42, 0.7);
     letter-spacing: -0.01em;
@@ -211,19 +198,19 @@ const words = aboutText.split(" ");
     line-height: 1;
   }
 
-  /* ── 9. PHOTO CARDS ────────────────────────────────────────────── */
+  /* ── 9. PHOTO CARDS — desktop float ── */
   .about-photo-card {
     position: absolute;
     z-index: 20;
-    width: clamp(128px, 12.5vw, 196px);
-    height: clamp(172px, 16.8vw, 262px);
+    width: clamp(112px, 11vw, 196px);
+    height: clamp(152px, 14.8vw, 262px);
     border-radius: 10px;
     overflow: hidden;
     box-shadow:
-      0 2px 4px rgba(15, 23, 42, 0.04),
-      0 8px 22px rgba(15, 23, 42, 0.08),
-      0 28px 56px rgba(15, 23, 42, 0.05),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+      0 2px 4px rgba(15,23,42,0.04),
+      0 8px 22px rgba(15,23,42,0.08),
+      0 28px 56px rgba(15,23,42,0.05),
+      inset 0 0 0 1px rgba(255,255,255,0.65);
     will-change: transform, opacity;
     opacity: 0;
     transform: translate3d(0, 100vh, 0);
@@ -235,18 +222,14 @@ const words = aboutText.split(" ");
     display: block;
     filter: saturate(0.82) brightness(1.04);
   }
-
-  /* Overlay metadata bawah foto */
   .photo-overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     padding: 36px 12px 11px;
     background: linear-gradient(
       to top,
-      rgba(8, 12, 24, 0.65) 0%,
-      rgba(8, 12, 24, 0.2) 60%,
+      rgba(8,12,24,0.65) 0%,
+      rgba(8,12,24,0.2) 60%,
       transparent 100%
     );
   }
@@ -256,7 +239,7 @@ const words = aboutText.split(" ");
     font-size: 8px;
     font-weight: 500;
     letter-spacing: 0.15em;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255,255,255,0.9);
     text-transform: uppercase;
     line-height: 1.4;
     margin-bottom: 2px;
@@ -267,35 +250,162 @@ const words = aboutText.split(" ");
     font-size: 7.5px;
     font-weight: 400;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.44);
+    color: rgba(255,255,255,0.44);
     text-transform: uppercase;
   }
-
-  /* Posisi kartu */
   .pos-left  { left:  clamp(28px, 4.5vw, 88px); }
   .pos-right { right: clamp(28px, 4.5vw, 88px); }
   .photo-smk     { top: 35vh; }
   .photo-polban  { top: 60vh; }
   .photo-bandung { top: 40vh; }
 
-  /* ── 10. RESPONSIVE ─────────────────────────────────────────────── */
-  @media (max-width: 768px) {
-    .about-scroll-track { height: 420vh; }
-    .about-photo-card {
-      width: 30vw;
-      height: 42vw;
-      /* Di mobile foto menjadi ambient, bukan focal — opacity sangat rendah */
-      opacity: 0.18 !important;
-    }
-    .pos-left  { left: -5vw; }
-    .pos-right { right: -5vw; }
-    .about-text-container { padding: 0 22px; gap: 28px; }
-    .reveal-text-block { font-size: clamp(19px, 5.2vw, 25px); }
-    .about-progress-bar { display: none; }
-    .about-corner-info  { display: none; }
-    .stat-item { padding: 0 14px; }
+  /* ── 10. MARQUEE STRIP — bottom of viewport ── */
+  .about-marquee-strip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 40;
+    overflow: hidden;
+    padding: 10px 0;
+    border-top: 1px solid rgba(15,23,42,0.06);
+    pointer-events: none;
+    /* fade edges */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  }
+  .marquee-inner {
+    display: flex;
+    width: max-content;
+    animation: marqueeScroll 22s linear infinite;
+  }
+  .marquee-inner:hover { animation-play-state: paused; }
+  .marquee-text {
+    /* Two copies for seamless loop */
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(15,23,42,0.3);
+    padding: 0 28px;
+  }
+  .marquee-dot {
+    font-size: 9px;
+    color: rgba(15,23,42,0.15);
+    padding: 0 4px;
+    letter-spacing: 0;
+    align-self: center;
   }
 
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── 11. MOBILE LOCATION TAG ── */
+  .mobile-location-tag {
+    display: none; /* shown only mobile */
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(15,23,42,0.35);
+  }
+  .location-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(63,197,255,0.6);
+    flex-shrink: 0;
+  }
+
+  /* ── 12. RESPONSIVE ── */
+
+  /* Tablet (≤ 900px): tighten photo positions */
+  @media (max-width: 900px) {
+    .pos-left  { left: 12px; }
+    .pos-right { right: 12px; }
+    .about-photo-card {
+      width: clamp(88px, 14vw, 130px);
+      height: clamp(118px, 19vw, 175px);
+    }
+  }
+
+  /* Mobile (≤ 640px): full overhaul */
+  @media (max-width: 640px) {
+    .about-scroll-track { height: 400vh; }
+
+    /* Hide desktop decorations */
+    .about-corner-info  { display: none; }
+    .about-progress-bar { display: none; }
+
+    /* Float photo cards off-screen — JS still controls opacity/transform
+       but we nudge them behind the text so they act as atmosphere */
+    .pos-left  { left: -14vw; }
+    .pos-right { right: -14vw; }
+    .about-photo-card {
+      width: 44vw;
+      height: 58vw;
+      opacity: 0; /* JS overrides, but start hidden; they'll be subtle ambient */
+    }
+    /* On mobile make them far more transparent so text is primary */
+    .about-photo-card[style] {
+      filter: opacity(0.22);
+    }
+
+    /* Text: slightly larger, narrower max-width */
+    .about-text-container {
+      padding: 0 24px;
+      gap: 22px;
+      max-width: 100%;
+    }
+    .reveal-text-block {
+      font-size: clamp(20px, 5.8vw, 28px);
+      line-height: 1.48;
+    }
+
+    /* Stats: 2×2 grid on very small, row on medium mobile */
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 0;
+      width: 100%;
+      max-width: 280px;
+    }
+    .stat-item {
+      padding: 0;
+      border-left: none !important;
+    }
+    /* Restore divider only between columns */
+    .stat-item:nth-child(2n) {
+      border-left: 1px solid rgba(15,23,42,0.1) !important;
+    }
+    .stat-val { font-size: 18px; }
+    .stat-key { font-size: 8.5px; }
+
+    /* Show mobile location tag above stats */
+    .mobile-location-tag { display: flex; }
+
+    /* Marquee slightly smaller */
+    .marquee-item { font-size: 8px; padding: 0 18px; }
+  }
+
+  /* Very small phones (≤ 375px) */
+  @media (max-width: 375px) {
+    .reveal-text-block { font-size: 18px; }
+    .about-stats { max-width: 240px; }
+  }
+
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .about-scroll-track { height: auto; padding: 100px 0; }
     .about-sticky-viewport {
@@ -313,22 +423,22 @@ const words = aboutText.split(" ");
     }
     .about-word { color: rgb(15, 23, 42); }
     .about-stats { opacity: 1; transform: none; }
+    .marquee-inner { animation: none; }
   }
 </style>
 
 <section id="abt-track" class="about-scroll-track font-inter">
   <div class="about-sticky-viewport" id="abt-viewport">
 
-    <!-- Ambient warm glow -->
     <div class="about-ambient-orb" id="abt-orb"></div>
 
-    <!-- Corner info top-right -->
+    <!-- Corner info — desktop -->
     <div class="about-corner-info font-inter">
       <span class="corner-info-line">Bandung</span>
       <span class="corner-info-line">Jawa Barat</span>
     </div>
 
-    <!-- Scroll progress right-edge -->
+    <!-- Progress bar — desktop -->
     <div class="about-progress-bar">
       <div class="progress-cap"></div>
       <div class="progress-track">
@@ -364,13 +474,18 @@ const words = aboutText.split(" ");
       </div>
     </figure>
 
-    <!-- Teks utama + stats -->
+    <!-- Main text + stats -->
     <div class="about-text-container">
       <p class="font-instrument reveal-text-block" id="abt-text">
         {words.map((word) => (
           <span class="about-word">{word}&nbsp;</span>
         ))}
       </p>
+
+      <!-- Mobile-only location indicator (above stats) -->
+      <div class="mobile-location-tag about-stats" id="abt-location-tag">
+        Bandung, Jawa Barat
+      </div>
 
       <div class="about-stats font-inter" id="abt-stats">
         <div class="stat-item">
@@ -392,10 +507,41 @@ const words = aboutText.split(" ");
       </div>
     </div>
 
+    <!-- Marquee strip — always visible at bottom of sticky viewport -->
+    <div class="about-marquee-strip" aria-hidden="true">
+      <div class="marquee-inner">
+        <!-- Copy 1 -->
+        <div class="marquee-text">
+          <span class="marquee-item">Bandung</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">SMK Negeri 13</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Politeknik Negeri Bandung</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Jawa Barat</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Web Development</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Graphic Design</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Creative Content</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">IPK 3.65</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">C1 English</span><span class="marquee-dot">·</span>
+        </div>
+        <!-- Copy 2 — seamless loop -->
+        <div class="marquee-text" aria-hidden="true">
+          <span class="marquee-item">Bandung</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">SMK Negeri 13</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Politeknik Negeri Bandung</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Jawa Barat</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Web Development</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Graphic Design</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">Creative Content</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">IPK 3.65</span><span class="marquee-dot">·</span>
+          <span class="marquee-item">C1 English</span><span class="marquee-dot">·</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <script>
+  /* ── ALL SCROLL/ANIMATION LOGIC UNCHANGED ── */
   const initAbout = () => {
     const track    = document.getElementById('abt-track');
     const viewport = document.getElementById('abt-viewport');
@@ -403,13 +549,13 @@ const words = aboutText.split(" ");
     const orb      = document.getElementById('abt-orb');
     const progFill = document.getElementById('abt-prog-fill');
     const stats    = document.getElementById('abt-stats');
+    const locTag   = document.getElementById('abt-location-tag');
     const cSmk     = document.getElementById('abt-card-smk');
     const cPolban  = document.getElementById('abt-card-polban');
     const cBandung = document.getElementById('abt-card-bandung');
 
     if (!track || !viewport || !textEl) return;
 
-    /* Rebuild word spans jika perlu (anti-duplikasi Astro View Transitions) */
     if (!textEl.querySelector('.about-word')) {
       const tokens = (textEl.textContent || '').trim().split(/\s+/);
       textEl.innerHTML = '';
@@ -422,7 +568,6 @@ const words = aboutText.split(" ");
     }
     const words = Array.from(textEl.querySelectorAll('.about-word'));
 
-    /* ── Cubic ease-out lerp ─────────────────────────────────────── */
     const lerp = (p: number, s: number, e: number, a: number, b: number) => {
       if (p <= s) return a;
       if (p >= e) return b;
@@ -438,30 +583,29 @@ const words = aboutText.split(" ");
       const total = rect.height - vh;
       const p     = Math.max(0, Math.min(1, -rect.top / total));
 
-      /* ── A. VIEWPORT FADE IN/OUT (fix garis kaku antar section) ── 
-         Fade in: 0% → 5% progress
-         Fade out: 92% → 100% progress
-         Ini yang bikin transisi atas/bawah mulus — tidak ada hard cut.       */
+      /* A. VIEWPORT FADE */
       const vOpacity = p < 0.05 ? p / 0.05 : p > 0.92 ? (1 - p) / 0.08 : 1;
       viewport.style.opacity = vOpacity.toFixed(3);
 
-      /* ── B. PROGRESS BAR ─────────────────────────────────────────  */
+      /* B. PROGRESS BAR */
       if (progFill) progFill.style.height = (p * 100).toFixed(1) + '%';
 
-      /* ── C. TEXT REVEAL ──────────────────────────────────────────  */
+      /* C. TEXT REVEAL */
       const thresh = Math.floor(p * words.length * 1.2);
       words.forEach((w, i) => w.classList.toggle('is-active', i < thresh));
 
-      /* ── D. STATS REVEAL (setelah teks hampir selesai) ───────────  */
-      stats?.classList.toggle('is-visible', p > 0.87);
+      /* D. STATS + LOCATION TAG REVEAL */
+      const showStats = p > 0.87;
+      stats?.classList.toggle('is-visible', showStats);
+      locTag?.classList.toggle('is-visible', showStats);
 
-      /* ── E. AMBIENT ORB — melayang pelan ke atas ─────────────────  */
+      /* E. AMBIENT ORB */
       if (orb) {
         const dy = lerp(p, 0, 1, 0, -35);
         orb.style.transform = `translate(-50%, calc(-50% + ${dy}px))`;
       }
 
-      /* ── F. PHOTO PARALLAX STAGGERED ─────────────────────────────  */
+      /* F. PHOTO PARALLAX — unchanged */
       if (cSmk) {
         const y = lerp(p, 0.0, 0.42, 100, -62);
         const o = p < 0.04 ? lerp(p, 0.0, 0.04, 0, 1) : lerp(p, 0.30, 0.42, 1, 0);
@@ -490,7 +634,7 @@ const words = aboutText.split(" ");
 
     window.removeEventListener('scroll', onScroll);
     window.addEventListener('scroll', onScroll, { passive: true });
-    tick(); /* Run sekali on init supaya state awal benar */
+    tick();
   };
 
   document.addEventListener('DOMContentLoaded', initAbout);
