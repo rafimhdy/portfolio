@@ -73,7 +73,7 @@ const categories = [
     position: relative;
   }
 
-  /* ── DOTS NAV — desktop only, unchanged ── */
+  /* ── DOTS NAV — desktop only ── */
   .scroll-dots-container {
     position: fixed;
     left: 40px;
@@ -148,7 +148,7 @@ const categories = [
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 16px;          /* was 0 24px — tighter on small screens */
+    padding: 0 16px;
     z-index: var(--card-index);
   }
 
@@ -174,17 +174,17 @@ const categories = [
   .card-top-row {
     display: flex;
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-    flex-shrink: 0;            /* never squish */
+    flex-shrink: 0;
   }
 
   .card-title-box {
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 24px 32px;        /* slightly tighter than 32/48 */
+    padding: 24px 32px;
     border-right: 1px solid rgba(15, 23, 42, 0.08);
     gap: 16px;
-    min-width: 0;              /* allow title to shrink */
+    min-width: 0;
   }
 
   .card-number {
@@ -195,20 +195,46 @@ const categories = [
     flex-shrink: 0;
   }
 
+  /* ── WADAH TEKS MARQUEE ── */
+  .card-title-wrapper {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden; /* Potong teks yang keluar batas */
+    display: flex;
+    align-items: center;
+    transition: mask-image 0.3s ease;
+  }
+
+  /* Efek gradasi pudar di ujung teks HANYA aktif jika teksnya overflow */
+  .card-title-wrapper.is-overflowing {
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+
   .card-title {
     font-size: clamp(1.8rem, 4.5vw, 5rem);
     font-weight: 300;
     color: #0f172a;
     line-height: 1;
     letter-spacing: -0.04em;
-    white-space: nowrap;       /* keep on one line; shrinks via clamp */
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; /* Jangan pernah turun ke baris baru */
+    display: inline-block; /* Diperlukan agar animasi CSS jalan */
+    will-change: transform;
   }
 
-  /* Arrow box — desktop width, mobile becomes icon bar */
+  /* Animasi ini bakal ditempel lewat JavaScript */
+  .marquee-bounce {
+    animation: bounceText 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  }
+
+  @keyframes bounceText {
+    0%, 15% { transform: translateX(0); } /* Tahan sebentar di awal */
+    85%, 100% { transform: translateX(var(--overflow-distance)); } /* Tahan sebentar di akhir */
+  }
+
+  /* Arrow box */
   .card-arrow-box {
-    width: 80px;               /* was 120px */
+    width: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -236,7 +262,7 @@ const categories = [
     display: flex;
     flex: 1;
     min-height: 0;
-    flex-direction: column;    /* mobile: stack */
+    flex-direction: column;
   }
 
   @media (min-width: 768px) {
@@ -269,7 +295,7 @@ const categories = [
     font-weight: 400;
   }
 
-  /* Explore button — unchanged styles */
+  /* Explore button */
   .explore-btn {
     display: inline-flex;
     align-items: center;
@@ -311,7 +337,7 @@ const categories = [
   .card-img-box {
     flex: 1;
     min-height: 0;
-    padding: 0 16px 16px;      /* mobile: symmetric padding */
+    padding: 0 16px 16px;
     overflow: hidden;
   }
 
@@ -331,8 +357,6 @@ const categories = [
 
   /* ─────────────────────────────────────────
      SMALL PHONE  (< 480px)
-     Card height: fill viewport minus a tiny
-     inset so stacking is still visible.
   ───────────────────────────────────────── */
   @media (max-width: 479px) {
     .card-sticky-wrapper { padding: 0 10px; }
@@ -345,11 +369,9 @@ const categories = [
     .card-title-box {
       padding: 16px 18px;
       gap: 10px;
-      /* hide border-right on small — no room */
       border-right: none;
     }
 
-    /* Arrow box moves below title on tiny screens */
     .card-top-row { flex-wrap: wrap; }
 
     .card-arrow-box {
@@ -395,7 +417,9 @@ const categories = [
           <div class="card-top-row">
             <div class="card-title-box">
               <span class="card-number">{cat.num}.</span>
-              <h2 class="font-satoshi card-title">{cat.title}</h2>
+              <div class="card-title-wrapper">
+                <h2 class="font-satoshi card-title">{cat.title}</h2>
+              </div>
             </div>
             <a href={`/${cat.slug}`} class="card-arrow-box" aria-label={`Go to ${cat.title}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -428,83 +452,116 @@ const categories = [
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    /* --- LOGIKA STICKY SCROLL ASLI --- */
     const sectionWrapper = document.getElementById('expertise-section');
     const wrappers = document.querySelectorAll('.card-sticky-wrapper');
     const dots = document.querySelectorAll('.nav-dot');
 
-    if (!sectionWrapper || wrappers.length === 0) return;
+    if (sectionWrapper && wrappers.length > 0) {
+      const wrapperObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            sectionWrapper.classList.add('is-in-view');
+          } else {
+            sectionWrapper.classList.remove('is-in-view');
+          }
+        });
+      }, { threshold: 0.1 });
+      wrapperObserver.observe(sectionWrapper);
 
-    const wrapperObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          sectionWrapper.classList.add('is-in-view');
-        } else {
-          sectionWrapper.classList.remove('is-in-view');
+      let ticking = false;
+
+      const handleScroll = () => {
+        const windowHeight = window.innerHeight;
+
+        wrappers.forEach((wrapper, index) => {
+          const innerCard = wrapper.querySelector('.card-inner') as HTMLElement;
+          const rect = wrapper.getBoundingClientRect();
+
+          if (rect.top <= windowHeight * 0.5 && rect.bottom >= windowHeight * 0.5) {
+            dots.forEach(d => d.classList.remove('active'));
+            const activeDot = document.querySelector(`.nav-dot[data-dot-index="${index}"]`);
+            if (activeDot) activeDot.classList.add('active');
+          }
+
+          if (!innerCard) return;
+
+          if (index === wrappers.length - 1) {
+            innerCard.style.opacity = '1';
+            innerCard.style.transform = 'scale(1) translateY(0)';
+            innerCard.style.filter = 'blur(0)';
+            return;
+          }
+
+          const nextWrapper = wrappers[index + 1];
+          const nextRect = nextWrapper.getBoundingClientRect();
+          const distanceToCover = nextRect.top;
+
+          if (distanceToCover <= 0) {
+            innerCard.style.opacity = '0';
+            innerCard.style.transform = 'scale(0.8) translateY(-40px)';
+            innerCard.style.filter = 'blur(10px)';
+          } else if (distanceToCover < windowHeight) {
+            let rawProgress = 1 - (distanceToCover / windowHeight);
+            let easeProgress = rawProgress * rawProgress;
+
+            let opacity = Math.max(0, 1 - (easeProgress * 2));
+            let scale = 1 - (easeProgress * 0.15);
+            let yOffset = easeProgress * -40;
+            let blurAmount = easeProgress * 10;
+
+            innerCard.style.opacity = opacity.toString();
+            innerCard.style.transform = `scale(${scale}) translateY(${yOffset}px)`;
+            innerCard.style.filter = `blur(${blurAmount}px)`;
+          } else {
+            innerCard.style.opacity = '1';
+            innerCard.style.transform = 'scale(1) translateY(0)';
+            innerCard.style.filter = 'blur(0)';
+          }
+        });
+        ticking = false;
+      };
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(handleScroll);
+          ticking = true;
         }
       });
-    }, { threshold: 0.1 });
-    wrapperObserver.observe(sectionWrapper);
 
-    let ticking = false;
+      handleScroll();
+    }
 
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
+    /* --- LOGIKA TEKS MARQUEE / BOUNCE BARU --- */
+    const initMarquees = () => {
+      document.querySelectorAll('.card-title-wrapper').forEach(wrapper => {
+        const title = wrapper.querySelector('.card-title') as HTMLElement;
+        if (!title) return;
 
-      wrappers.forEach((wrapper, index) => {
-        const innerCard = wrapper.querySelector('.card-inner') as HTMLElement;
-        const rect = wrapper.getBoundingClientRect();
+        // Reset kelas animasi biar bisa ngukur ulang dengan akurat
+        wrapper.classList.remove('is-overflowing');
+        title.classList.remove('marquee-bounce');
+        title.style.transform = '';
 
-        if (rect.top <= windowHeight * 0.5 && rect.bottom >= windowHeight * 0.5) {
-          dots.forEach(d => d.classList.remove('active'));
-          const activeDot = document.querySelector(`.nav-dot[data-dot-index="${index}"]`);
-          if (activeDot) activeDot.classList.add('active');
-        }
+        // Hitung apakah teks lebih panjang dari ruang yang tersedia
+        const overflow = title.scrollWidth - wrapper.clientWidth;
 
-        if (!innerCard) return;
-
-        if (index === wrappers.length - 1) {
-          innerCard.style.opacity = '1';
-          innerCard.style.transform = 'scale(1) translateY(0)';
-          innerCard.style.filter = 'blur(0)';
-          return;
-        }
-
-        const nextWrapper = wrappers[index + 1];
-        const nextRect = nextWrapper.getBoundingClientRect();
-        const distanceToCover = nextRect.top;
-
-        if (distanceToCover <= 0) {
-          innerCard.style.opacity = '0';
-          innerCard.style.transform = 'scale(0.8) translateY(-40px)';
-          innerCard.style.filter = 'blur(10px)';
-        } else if (distanceToCover < windowHeight) {
-          let rawProgress = 1 - (distanceToCover / windowHeight);
-          let easeProgress = rawProgress * rawProgress;
-
-          let opacity = Math.max(0, 1 - (easeProgress * 2));
-          let scale = 1 - (easeProgress * 0.15);
-          let yOffset = easeProgress * -40;
-          let blurAmount = easeProgress * 10;
-
-          innerCard.style.opacity = opacity.toString();
-          innerCard.style.transform = `scale(${scale}) translateY(${yOffset}px)`;
-          innerCard.style.filter = `blur(${blurAmount}px)`;
-        } else {
-          innerCard.style.opacity = '1';
-          innerCard.style.transform = 'scale(1) translateY(0)';
-          innerCard.style.filter = 'blur(0)';
+        // Cuma dianimasiin kalau emang beneran kepotong / mentok
+        if (overflow > 2) {
+          wrapper.classList.add('is-overflowing'); // Memicu gradasi pinggiran
+          title.style.setProperty('--overflow-distance', `-${overflow}px`);
+          title.classList.add('marquee-bounce'); // Memicu animasi jalan
         }
       });
-      ticking = false;
     };
 
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(handleScroll);
-        ticking = true;
-      }
-    });
+    // Jalankan kalkulasi saat halaman selesai dimuat
+    // Timeout kecil memastikan font sudah terender ukurannya
+    setTimeout(initMarquees, 100);
 
-    handleScroll();
+    // Hitung ulang kalau user bolak-balik hp (portrait ke landscape)
+    window.addEventListener('resize', () => {
+      window.requestAnimationFrame(initMarquees);
+    });
   });
 </script>

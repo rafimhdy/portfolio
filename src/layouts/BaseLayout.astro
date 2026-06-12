@@ -2,6 +2,7 @@
 // src/layouts/BaseLayout.astro
 
 import CustomCursor from '../components/CustomCursor.astro';
+import Preloader from '../components/Preloader.astro'; // <-- Import Preloader di sini
 const { title = "Rafi Portfolio" } = Astro.props;
 ---
 
@@ -68,46 +69,13 @@ const { title = "Rafi Portfolio" } = Astro.props;
         top: 0; bottom: 0; right: 0; width: 44px;
         background: linear-gradient(to left, rgba(249,251,253,0.72), rgba(249,251,253,0));
       }
-
-      /* PRELOADER */
-      #framer-preloader {
-        position: fixed; inset: 0; z-index: 99999999;
-        background-color: #020617; 
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        width: 100%; height: 100dvh;
-      }
-
-      .instrument-splash { font-family: 'Instrument Serif', serif; }
-
-      @keyframes revealText {
-        0% { transform: translateY(100%); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-      }
-      .animate-reveal { animation: revealText 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-      .splash-exit {
-        transform: translateY(-100%);
-        transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
-        pointer-events: none; 
-      }
     </style>
 
     <slot name="head" />
   </head>
   <body class="font-sans antialiased">
     
-    <div id="framer-preloader" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999999; background-color: #020617; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100dvh;">
-      <div class="overflow-hidden">
-        <h1 class="instrument-splash text-white text-7xl md:text-9xl tracking-tight animate-reveal opacity-0">
-          Rafi Mahdy.
-        </h1>
-      </div>
-      <div class="overflow-hidden mt-3">
-        <p class="text-slate-400 font-mono tracking-widest text-[10px] md:text-xs uppercase animate-reveal opacity-0" style="animation-delay: 0.2s;">
-          Loading Experience
-        </p>
-      </div>
-    </div>
+    <Preloader />
 
     <div class="edge-blur edge-top"></div>
     <div class="edge-blur edge-bottom"></div>
@@ -132,16 +100,7 @@ const { title = "Rafi Portfolio" } = Astro.props;
 
     <script>
       window.addEventListener('DOMContentLoaded', () => {
-        // 1. Logika Preloader
-        const preloader = document.getElementById('framer-preloader');
-        if (preloader) {
-          setTimeout(() => {
-            preloader.classList.add('splash-exit');
-            setTimeout(() => { preloader.style.display = 'none'; }, 800); 
-          }, 1800);
-        }
-
-        // 2. Logika Deteksi Footer (Observer)
+        // Logika Deteksi Footer (Observer)
         const footerElement = document.querySelector('footer');
         if (footerElement) {
           const observer = new IntersectionObserver((entries) => {
