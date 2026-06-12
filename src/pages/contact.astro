@@ -1,0 +1,430 @@
+---
+// src/pages/contact.astro
+import Layout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+---
+
+<Layout title="Contact | Muhammad Rafi Mahdy">
+  <Navbar />
+
+  <main class="cp">
+
+    <!-- Background orbs: bahan bakar glassmorphism -->
+    <div class="orb orb-a" aria-hidden="true"></div>
+    <div class="orb orb-b" aria-hidden="true"></div>
+    <div class="orb orb-c" aria-hidden="true"></div>
+
+    <!-- Grain untuk richness -->
+    <div class="cp-grain" aria-hidden="true"></div>
+
+    <div class="cp-wrap">
+
+      <!-- Headline -->
+      <h1 class="cp-headline">
+        <span class="hl anim">The Future is</span>
+        <span class="hl anim delay-1">Made of <em>Choices.</em></span>
+      </h1>
+
+      <!-- Cards -->
+      <div class="cp-cards">
+
+        <!--
+          EMAIL CARD
+          Tidak ada email, href="#", tidak ada data-attribute dengan email.
+          Semua dirakit 100% di JS runtime — tidak ada jejak di HTML source.
+        -->
+        <a href="#"
+           id="js-email-card"
+           class="glass-card anim delay-2"
+           role="button"
+           aria-label="Send us an email">
+          <div class="card-info">
+            <span class="card-tag" id="js-email-tag">Email</span>
+            <h2 class="card-title">Email Us.</h2>
+          </div>
+          <div class="card-vdiv" aria-hidden="true"></div>
+          <div class="card-cta" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </div>
+        </a>
+
+        <!-- WHATSAPP CARD -->
+        <a href="https://wa.me/6287717139438"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="glass-card anim delay-3"
+           aria-label="Chat via WhatsApp">
+          <div class="card-info">
+            <span class="card-tag">+62 877-1713-9438</span>
+            <h2 class="card-title">WhatsApp.</h2>
+          </div>
+          <div class="card-vdiv" aria-hidden="true"></div>
+          <div class="card-cta" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"/>
+              <polyline points="7 7 17 7 17 17"/>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="cp-footer anim delay-4">
+      <span>© 2025 Muhammad Rafi Mahdy</span>
+      <span>Bandung, ID</span>
+    </footer>
+
+  </main>
+</Layout>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+
+  /* ── PAGE ────────────────────────────────────────────────────────── */
+  .cp {
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+
+    /* Warm cream base — cukup berbeda dari pure white agar orbs kelihatan */
+    background: #f0ebe0;
+    padding-bottom: 12vh;
+  }
+
+  /* ── BACKGROUND ORBS ─────────────────────────────────────────────── */
+  /*
+    Tiga orb beda posisi dan warna — ini yang di-blur oleh backdrop-filter
+    glassmorphism. Tanpa ini, glass card cuma keliatan putih biasa.
+  */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-a {
+    /* Warm amber — top right */
+    width: clamp(340px, 48vw, 680px);
+    height: clamp(340px, 48vw, 680px);
+    background: radial-gradient(circle, rgba(210, 168, 90, 0.45) 0%, transparent 68%);
+    top: -12%; right: -8%;
+    filter: blur(32px);
+  }
+  .orb-b {
+    /* Soft periwinkle blue — bottom left */
+    width: clamp(280px, 40vw, 580px);
+    height: clamp(280px, 40vw, 580px);
+    background: radial-gradient(circle, rgba(140, 170, 220, 0.35) 0%, transparent 68%);
+    bottom: -10%; left: -6%;
+    filter: blur(28px);
+  }
+  .orb-c {
+    /* Faint rose — center-ish, subtle depth */
+    width: clamp(200px, 30vw, 420px);
+    height: clamp(200px, 30vw, 420px);
+    background: radial-gradient(circle, rgba(220, 170, 155, 0.22) 0%, transparent 65%);
+    top: 30%; left: 30%;
+    filter: blur(40px);
+  }
+
+  /* ── GRAIN ───────────────────────────────────────────────────────── */
+  .cp-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px;
+    opacity: 0.038;
+    mix-blend-mode: multiply;
+  }
+
+  /* ── CONTENT WRAPPER ─────────────────────────────────────────────── */
+  .cp-wrap {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 920px;
+    padding: 0 clamp(20px, 5vw, 64px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(32px, 5vh, 52px);
+  }
+
+  /* ── HEADLINE ────────────────────────────────────────────────────── */
+  .cp-headline {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 8.5vw, 110px);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+    color: #1a1d27;
+    display: flex;
+    flex-direction: column;
+    gap: 0.04em;
+  }
+  .hl { display: block; }
+  .cp-headline em {
+    font-style: italic;
+    /* Stroke outline: "Choices." tampak terukir, berbeda dari baris pertama yang solid */
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(26, 29, 39, 0.5);
+    text-stroke: 1.5px rgba(26, 29, 39, 0.5);
+  }
+
+  /* ── CARDS ROW ───────────────────────────────────────────────────── */
+  .cp-cards {
+    display: flex;
+    gap: clamp(12px, 1.8vw, 20px);
+  }
+
+  /* ── GLASS CARD ──────────────────────────────────────────────────── */
+  /*
+    Glass card dari snippet user + modifikasi:
+    - Tambah transition untuk hover state
+    - ::before & ::after untuk efek kilap edge
+    - overflow: hidden supaya card-cta tidak keluar border-radius
+  */
+  .glass-card {
+    flex: 1;
+    min-width: 0;
+    height: clamp(138px, 17vh, 172px);
+    display: flex;
+    align-items: stretch;
+    text-decoration: none;
+    color: #1a1d27;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+
+    /* Glassmorphism */
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 0 20px 10px rgba(255, 255, 255, 0.9);
+
+    transition:
+      background    0.38s cubic-bezier(0.25, 1, 0.5, 1),
+      box-shadow    0.38s cubic-bezier(0.25, 1, 0.5, 1),
+      border-color  0.38s ease,
+      transform     0.38s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Kilap tepi atas — dari snippet user */
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+    z-index: 2;
+  }
+  /* Kilap tepi kiri — dari snippet user */
+  .glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 1px; height: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85), transparent, rgba(255,255,255,0.35));
+    z-index: 2;
+  }
+
+  /* HOVER: card jadi putih solid, terangkat sedikit */
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 20px 52px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-3px);
+  }
+
+  /* ── CARD INFO (left section) ────────────────────────────────────── */
+  .card-info {
+    flex: 1;
+    min-width: 0;
+    padding: clamp(18px, 2.2vh, 26px) clamp(20px, 2.5vw, 32px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .card-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(26, 29, 39, 0.35);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+  }
+  .glass-card:hover .card-tag { color: rgba(26, 29, 39, 0.55); }
+
+  .card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(26px, 3.2vw, 42px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: rgba(26, 29, 39, 0.72);
+    line-height: 1;
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+  .glass-card:hover .card-title { color: #1a1d27; }
+
+  /* ── VERTICAL DIVIDER ────────────────────────────────────────────── */
+  .card-vdiv {
+    width: 1px;
+    background: rgba(26, 29, 39, 0.07);
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+  }
+  .glass-card:hover .card-vdiv { background: rgba(26, 29, 39, 0.1); }
+
+  /* ── CTA (right arrow section) ───────────────────────────────────── */
+  /*
+    Default: transparan.
+    Hover: jadi accent color navy — persis kayak referensi yang lime green,
+    tapi pakai palette yang cocok sama site Rafi.
+  */
+  .card-cta {
+    width: clamp(80px, 10vw, 116px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .glass-card:hover .card-cta { background: #1c3455; }
+
+  .card-cta svg {
+    color: rgba(26, 29, 39, 0.3);
+    transition: color 0.3s ease, transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .glass-card:hover .card-cta svg {
+    color: #ffffff;
+    transform: translate(3px, -3px);
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  .cp-footer {
+    position: fixed;
+    bottom: clamp(18px, 3vh, 32px);
+    left: 0; right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 clamp(20px, 5vw, 64px);
+    pointer-events: none;
+    font-size: 9.5px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(26, 29, 39, 0.25);
+  }
+
+  /* ── LOAD ANIMATION ──────────────────────────────────────────────── */
+  .anim {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.62s ease, transform 0.62s ease;
+  }
+  .anim.is-ready { opacity: 1; transform: translateY(0); }
+  .delay-1 { transition-delay: 0.1s; }
+  .delay-2 { transition-delay: 0.2s; }
+  .delay-3 { transition-delay: 0.3s; }
+  .delay-4 { transition-delay: 0.42s; }
+
+  /* ── RESPONSIVE ──────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    html, body { overflow: auto; }
+    .cp { height: auto; min-height: 100vh; padding: 96px 0 100px; justify-content: flex-start; }
+    .cp-cards { flex-direction: column; }
+    .glass-card { height: clamp(110px, 18vh, 148px); }
+    .cp-headline { font-size: clamp(38px, 12vw, 60px); }
+    .card-title { font-size: clamp(22px, 6.5vw, 32px); }
+    .card-cta { width: 72px; }
+    .cp-footer { position: relative; margin-top: 40px; padding: 0 20px; }
+  }
+
+  @media (max-height: 580px) {
+    html, body { overflow: auto; }
+    .cp { height: auto; padding: 80px 0 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .glass-card { transition: none !important; }
+  }
+</style>
+
+<script>
+  const initContact = () => {
+    /* ── Load animation ─────────────────────────────────────────── */
+    document.querySelectorAll('.anim').forEach(el => {
+      // Double rAF: animasi mulai setelah browser selesai paint pertama
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.classList.add('is-ready');
+      }));
+    });
+
+    /* ── Email security ─────────────────────────────────────────────
+       Email tidak ada di HTML sama sekali — dirakit sepenuhnya di sini.
+       Teknik: pisah user dan domain, gabung di runtime.
+       Tidak ada string lengkap "user@domain" di source code.
+    ────────────────────────────────────────────────────────────────── */
+    const card  = document.getElementById('js-email-card');
+    const label = document.getElementById('js-email-tag');
+    if (!card || !label) return;
+
+    // Dipecah jadi dua variabel — tidak ada email lengkap di source
+    const _u = ['hel', 'lo'].join('');
+    const _d = ['mrafimahdy', 'works'].join('.');
+    const getEmail = () => `${_u}@${_d}`;
+
+
+    /* Open mailto on click */
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `mailto:${getEmail()}`;
+    });
+
+    /* Keyboard accessible */
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        window.location.href = `mailto:${getEmail()}`;
+      }
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', initContact);
+  document.addEventListener('astro:page-load', initContact);
+</script>
