@@ -121,5 +121,14 @@ const { title = "Rafi Portfolio" } = Astro.props;
         }
       });
     </script>
+
+    <script is:inline>
+  const currentPath = window.location.pathname;
+  
+  // KUNCI: Cuma rekam kalau path-nya BUKAN halaman utama ('/')
+  if (currentPath !== '/' && currentPath !== '/index.html') {
+    sessionStorage.setItem('last_competency_page', currentPath);
+  }
+</script>
   </body>
 </html>
