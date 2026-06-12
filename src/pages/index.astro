@@ -12,18 +12,33 @@ import Footer from '../components/Footer.astro';
 
 <Fragment slot="head">
   <script is:inline>
-    const urlParams = new URLSearchParams(window.location.search);
-    const lastPage = sessionStorage.getItem('last_competency_page');
+  const urlParams = new URLSearchParams(window.location.search);
+  const lastPage = sessionStorage.getItem('last_competency_page');
+  
+  // 1. Mantra bypass buat lu sendiri
+  if (urlParams.get('owner') === 'rafi') {
+    sessionStorage.removeItem('last_competency_page');
+  } 
+  // 2. Kunci hanya berjalan di server live
+  else if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     
-    if (urlParams.get('owner') === 'rafi') {
-      sessionStorage.removeItem('last_competency_page');
-    } 
-    else if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      if (lastPage) {
+    if (lastPage) {
+      // KUNCI UTAMA: Cek dari mana user ini berasal
+      const referredFrom = document.referrer;
+      
+      // Jika user datang ke home BUKAN karena ngeklik link/tombol dari dalam web lu sendiri,
+      // alias nilainya kosong (ketik manual di URL bar) atau datang dari luar domain mrafimahdy.works
+      if (!referredFrom || !referredFrom.includes(window.location.hostname)) {
         window.location.href = lastPage;
+      } else {
+        // Kalau mereka datang karena klik tombol "Back" atau menu internal, 
+        // kita bersihkan memorinya agar mereka bisa liat homepage dengan normal lagi!
+        sessionStorage.removeItem('last_competency_page');
       }
     }
-  </script>
+
+  }
+</script>
 </Fragment>
 
 <BaseLayout title="Home | Muhammad Rafi Mahdy">
