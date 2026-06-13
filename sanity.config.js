@@ -6,7 +6,7 @@ import { experienceSchema } from "./src/sanity/schemas/experienceschema.js";
 
 // 1. Definisikan list posisi secara terpusat agar bisa digunakan berulang kali
 const POSITIONS = [
-  { title: "Web Dev", value: "web-dev" },
+  { title: "Information Technology", value: "tech" },
   { title: "Translation", value: "translation" },
   { title: "Operations", value: "operations" },
   { title: "Creative Content", value: "creative" },

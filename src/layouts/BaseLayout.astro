@@ -1,82 +1,69 @@
 ---
 // src/layouts/BaseLayout.astro
-
 import CustomCursor from '../components/CustomCursor.astro';
-import Preloader from '../components/Preloader.astro'; // <-- Import Preloader di sini
-import Analytics from '@vercel/analytics/astro'
-import SpeedInsights from "@vercel/speed-insights/astro"
-const { title = "Rafi Portfolio" } = Astro.props;
+import Preloader from '../components/Preloader.astro';
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from "@vercel/speed-insights/astro";
+import '../styles/global.css';
+
+const { 
+  title = "Rafi Portfolio", 
+  description = "Portofolio profesional Muhammad Rafi Mahdy - Specialist dalam Berbagai Bidang." 
+} = Astro.props;
 ---
 
+<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title} | Rafi</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="description" content={description} />
 
-    <style is:inline>
-      /* BASE RESET */
-      body {
-        background-color: #f9fbfd;
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        position: relative;
-      }
+    <script is:inline>
+      (function () {
+        var KEY = 'rafi-entry-v1';
 
-      .sophie-grain-layer {
-        position: fixed;
-        inset: 0;
-        z-index: -9;
-        opacity: 0.025;
-        pointer-events: none;
-        contain: paint;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      }
+        // Halaman yang tetap bisa diakses dari entry manapun.
+        // Tambah path di sini kalau perlu, misal '/contact'.
+        var ALWAYS_FREE = [];
 
-      section, main {
-        background-color: transparent !important;
-      }
+        try {
+          var entry       = sessionStorage.getItem(KEY);
+          var currentPath = window.location.pathname;
 
-      /* Efek transisi smooth buat ngilangin edge pas masuk footer */
-      .edge-blur {
-        position: fixed;
-        pointer-events: none;
-        z-index: 30;
-        contain: paint;
-        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      }
+          if (entry && entry !== '/') {
+            // Pengunjung masuk lewat position page.
+            // Hanya boleh di path entry mereka atau di ALWAYS_FREE.
+            var isOnEntry = currentPath === entry;
+            var isFree    = ALWAYS_FREE.indexOf(currentPath) !== -1;
 
-      /* KUNCI: Saat body punya class 'is-in-footer', kiri, kanan, bawah hilang! */
-      body.is-in-footer .edge-bottom,
-      body.is-in-footer .edge-left,
-      body.is-in-footer .edge-right {
-        opacity: 0;
-      }
-
-      .edge-top {
-        top: 0; left: 0; right: 0; height: 96px;
-        background: linear-gradient(to bottom, rgba(249,251,253,0.92), rgba(249,251,253,0));
-      }
-      .edge-bottom {
-        bottom: 0; left: 0; right: 0; height: 96px;
-        background: linear-gradient(to top, rgba(249,251,253,0.88), rgba(249,251,253,0));
-      }
-      .edge-left {
-        top: 0; bottom: 0; left: 0; width: 44px;
-        background: linear-gradient(to right, rgba(249,251,253,0.72), rgba(249,251,253,0));
-      }
-      .edge-right {
-        top: 0; bottom: 0; right: 0; width: 44px;
-        background: linear-gradient(to left, rgba(249,251,253,0.72), rgba(249,251,253,0));
-      }
-    </style>
+            if (!isOnEntry && !isFree) {
+              document.documentElement.style.visibility = 'hidden';
+              window.location.replace(entry);
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <slot name="head" />
   </head>
+  
   <body class="font-sans antialiased">
-    
+
+    <script is:inline>
+      (function () {
+        var KEY = 'rafi-entry-v1';
+        try {
+          if (!sessionStorage.getItem(KEY)) {
+            sessionStorage.setItem(KEY, window.location.pathname);
+          }
+          document.documentElement.style.visibility = '';
+        } catch (e) {}
+      })();
+    </script>
+
     <Preloader />
 
     <div class="edge-blur edge-top"></div>
@@ -102,37 +89,43 @@ const { title = "Rafi Portfolio" } = Astro.props;
 
     <script>
       window.addEventListener('DOMContentLoaded', () => {
-        // Logika Deteksi Footer (Observer)
         const footerElement = document.querySelector('footer');
         if (footerElement) {
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-              // Jika 15% dari footer mulai terlihat di layar
               if (entry.isIntersecting) {
                 document.body.classList.add('is-in-footer');
               } else {
                 document.body.classList.remove('is-in-footer');
               }
             });
-          }, { 
-            root: null, 
-            threshold: 0.15 // Aktif saat 15% area footer masuk viewport
-          });
-          
+          }, { root: null, threshold: 0.15 });
           observer.observe(footerElement);
         }
       });
+
+      // Guard untuk Astro View Transitions (navigasi tanpa full reload)
+      document.addEventListener('astro:page-load', () => {
+        const KEY         = 'rafi-entry-v1';
+        const ALWAYS_FREE: string[] = []; // samain dengan yang di <head>
+
+        try {
+          const entry       = sessionStorage.getItem(KEY);
+          const currentPath = window.location.pathname;
+
+          if (entry && entry !== '/') {
+            const isOnEntry = currentPath === entry;
+            const isFree    = ALWAYS_FREE.includes(currentPath);
+
+            if (!isOnEntry && !isFree) {
+              window.location.replace(entry);
+            }
+          }
+        } catch (e) {}
+      });
     </script>
 
-    <script is:inline>
-  const currentPath = window.location.pathname;
-  
-  // KUNCI: Cuma rekam kalau path-nya BUKAN halaman utama ('/')
-  if (currentPath !== '/' && currentPath !== '/index.html') {
-    sessionStorage.setItem('last_competency_page', currentPath);
-  }
-</script>
-<Analytics />
-<SpeedInsights />
+    <Analytics />
+    <SpeedInsights />
   </body>
 </html>

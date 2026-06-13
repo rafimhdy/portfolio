@@ -39,7 +39,7 @@ export const toolsSchema = {
         "Pilih agar tool ini muncul di halaman kompetensi yang sesuai",
       options: {
         list: [
-          { title: "Web Dev", value: "web-dev" },
+          { title: "Information Technology", value: "tech" },
           { title: "Translation", value: "translation" },
           { title: "Operations", value: "operations" },
           { title: "Creative Content", value: "creative" },

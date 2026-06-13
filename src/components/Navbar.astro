@@ -4,8 +4,6 @@ const { isPage = false } = Astro.props;
 ---
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
-
   .font-inter-nav { font-family: 'Inter', sans-serif !important; }
 
   /* ── DOCK ── */
@@ -152,7 +150,7 @@ const { isPage = false } = Astro.props;
           </svg>
           <span class="nav-label">Expertise</span>
         </a>
-        <a href="/contact" target="_blank" rel="noopener noreferrer" class="framer-nav-item">
+        <a href="/contact" class="framer-nav-item">
           <!-- Contact / mail icon -->
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -188,7 +186,7 @@ const { isPage = false } = Astro.props;
           </svg>
           <span class="nav-label">Tools</span>
         </a>
-        <a href="/contact" target="_blank" rel="noopener noreferrer" class="framer-nav-item">
+        <a href="/contact" class="framer-nav-item">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2"/>
             <path d="M2 7l10 7 10-7"/>

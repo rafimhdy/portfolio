@@ -56,7 +56,7 @@ export const experienceSchema = {
         "Pilih agar riwayat kerja ini dikelompokkan ke halaman kompetensi yang pas",
       options: {
         list: [
-          { title: "Web Dev", value: "web-dev" },
+          { title: "Information Technology", value: "tech" },
           { title: "Translation", value: "translation" },
           { title: "Operations", value: "operations" },
           { title: "Creative Content", value: "creative" },

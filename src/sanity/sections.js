@@ -1,7 +1,7 @@
 export const portfolioSections = [
   {
-    slug: "web-dev",
-    title: "Web Development",
+    slug: "tech",
+    title: "Information Technology",
     description:
       "Builds, dashboards, landing pages, and the technical layer behind the portfolio.",
     accent: "#7dd3fc",
