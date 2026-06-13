@@ -1,0 +1,652 @@
+---
+// src/pages/projects/[id].astro
+import { sanityClient } from 'sanity:client';
+import imageUrlBuilder from '@sanity/image-url';
+
+export async function getStaticPaths() {
+  // 1. Ambil slug.current dari Sanity, bukan _id
+  const projects = await sanityClient.fetch(`*[_type == "project" && defined(slug.current)] { slug }`);
+  
+  return projects.map((p: { slug: { current: string } }) => ({ 
+    params: { slug: p.slug.current } // sesuaikan parameter ke slug
+  }));
+}
+
+// 2. Tangkap parameter slug
+const { slug } = Astro.params;
+
+// 3. Ubah query GROQ untuk mencari berdasarkan slug.current
+const project = await sanityClient.fetch(
+  `*[_type == "project" && slug.current == $slug][0] {
+    _id, title, company, location, category,
+    coverImage, images, content, featured, _createdAt, projectLink
+  }`,
+  { slug }
+);
+
+if (!project) return Astro.redirect('/404');
+
+const builder = imageUrlBuilder(sanityClient);
+function urlFor(source: any) { return builder.image(source); }
+
+function blocksToHtml(blocks: any[]): string {
+  if (!blocks?.length) return '';
+  return blocks.map((block: any) => {
+    
+    // 1. RE-RENDER GAMBAR (Tipe image / inlineImage)
+    if (block._type === 'image' || block._type === 'inlineImage') {
+      if (!block.asset) return '';
+      try {
+        const imgUrl = urlFor(block.asset).url();
+        const alt = block.alt || 'Project illustration';
+        const w = block.width ? `width: ${block.width};` : 'max-width: 100%;';
+        const h = block.height ? `height: ${block.height};` : 'height: auto;';
+        return `<img src="${imgUrl}" alt="${alt}" style="${w} ${h} border-radius: 8px; margin: 24px 0; display: block;" />`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    // 2. RE-RENDER BLOK TEKS (Mendukung Link & Format Teks)
+    if (block._type !== 'block') return '';
+    
+    const markDefs = block.markDefs ?? [];
+    const children = block.children ?? [];
+
+    // Proses setiap potongan teks di dalam blok
+    const renderedChildren = children.map((child: any) => {
+      let textHtml = child.text ?? '';
+
+      // Jika teks ini memiliki format atau link
+      if (child.marks?.length) {
+        child.marks.forEach((mark: string) => {
+          // Cek apakah mark ini adalah sebuah Link (Annotation)
+          const linkDef = markDefs.find((def: any) => def._key === mark);
+          if (linkDef && (linkDef._type === 'link' || linkDef.href)) {
+            textHtml = `<a href="${linkDef.href}" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500;">${textHtml}</a>`;
+          }
+          
+          // Cek format dekorator standar
+          if (mark === 'strong') textHtml = `<strong>${textHtml}</strong>`;
+          if (mark === 'em') textHtml = `<em>${textHtml}</em>`;
+          if (mark === 'underline') textHtml = `<u>${textHtml}</u>`;
+          if (mark === 'strike') textHtml = `<del>${textHtml}</del>`;
+        });
+      }
+      return textHtml;
+    }).join('');
+
+    // Bungkus teks yang sudah jadi ke dalam tag HTML yang sesuai
+    const style = block.style ?? 'normal';
+    if (style === 'h2') return `<h2>${renderedChildren}</h2>`;
+    if (style === 'h3') return `<h3>${renderedChildren}</h3>`;
+    if (style === 'blockquote') return `<blockquote>${renderedChildren}</blockquote>`;
+    
+    return `<p>${renderedChildren}</p>`;
+  }).join('');
+}
+
+const contentHtml = blocksToHtml(project.content ?? []);
+const extraImages: any[] = project.images ?? [];
+const year = project._createdAt ? new Date(project._createdAt).getFullYear() : null;
+
+// Email obfuscation — split so it never appears whole in HTML source
+const ep1 = 'hello';
+const ep2 = 'mrafimahdy';
+const ep3 = 'works';
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{project.title} — Portfolio</title>
+  <meta name="description" content={`${project.title} — ${project.company ?? 'Independent project'}`} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Satoshi';
+      src: url('/fonts/Satoshi-Variable.woff2') format('woff2'),
+           url('/fonts/Satoshi-Regular.woff2') format('woff2'),
+           url('/fonts/Satoshi-Regular.woff') format('woff');
+      font-weight: 300 900;
+      font-display: swap;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F7F8FB;
+      color: #0d0d0d;
+      min-height: 100vh;
+    }
+
+    /* ── BACK BUTTON ── */
+    .back-btn {
+      position: fixed;
+      top: 24px;
+      left: clamp(16px, 4vw, 40px);
+      z-index: 100;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6b7280;
+      text-decoration: none;
+      background: #F7F8FB;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.07);
+      padding: 8px 14px 8px 10px;
+      border-radius: 100px;
+      transition: color 0.18s ease, background 0.18s ease;
+    }
+    .back-btn:hover { color: #0d0d0d; background: #fff; }
+    .back-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 5.5vw, 72px);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding-top: clamp(88px, 13vh, 136px);
+      padding-bottom: 0;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .hero-category {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      background: #eeecе8;
+      background: #ededea;
+      padding: 4px 11px;
+      border-radius: 100px;
+    }
+
+    .hero-year {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #c8c8c3;
+      font-weight: 400;
+    }
+
+    .hero-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(36px, 5.8vw, 76px);
+      font-weight: 400;
+      font-style: italic;
+      color: #0d0d0d;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      max-width: 820px;
+      margin-bottom: clamp(24px, 3.5vh, 40px);
+    }
+
+    /* Meta strip */
+    .hero-details {
+      display: flex;
+      flex-wrap: wrap;
+      border-top: 1px solid #e4e2de;
+      padding-top: 20px;
+      margin-bottom: clamp(32px, 5vh, 56px);
+      gap: 0;
+    }
+
+    .detail-item {
+      flex: 1 1 140px;
+      padding: 14px 20px 14px 0;
+      border-right: 1px solid #e4e2de;
+      margin-right: 10px;
+    }
+    .detail-item:last-child { border-right: none; padding-right: 0; }
+
+    .detail-key {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #b8b8b2;
+      margin-bottom: 5px;
+    }
+    .detail-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.4;
+    }
+
+    /* ── COVER IMAGE — contained, not full-bleed ── */
+    .cover-wrap {
+      margin-bottom: clamp(40px, 6vh, 64px);
+    }
+
+    .cover-img {
+      width: 100%;
+      /* Shorter: max 420px, never more than 38vw on wide screens */
+      height: clamp(220px, 38vw, 420px);
+      object-fit: cover;
+      border-radius: 5px;
+      display: block;
+      background: #e4e2de;
+    }
+
+    /* ── BODY GRID ── */
+    .page-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      padding-bottom: clamp(64px, 10vh, 100px);
+    }
+
+    @media (min-width: 860px) {
+      .page-body {
+        grid-template-columns: 1fr 300px;
+        gap: 64px;
+        align-items: start;
+      }
+    }
+
+    /* ── CONTENT ── */
+    .content-body {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(14.5px, 1.5vw, 16.5px);
+      line-height: 1.85;
+      color: #3f4a57;
+    }
+    .content-body p { margin: 0 0 20px; }
+    .content-body p:last-child { margin-bottom: 0; }
+    .content-body h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(22px, 2.2vw, 30px);
+      font-weight: 400;
+      font-style: italic;
+      color: #0d0d0d;
+      margin: 36px 0 14px;
+      letter-spacing: -0.01em;
+    }
+    .content-body h3 {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin: 28px 0 10px;
+    }
+
+    .empty-content {
+      font-size: 14px;
+      color: #c0c0ba;
+      font-style: italic;
+    }
+
+    /* ── IMAGES GRID ── */
+    .images-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 40px;
+    }
+    .images-grid.single { grid-template-columns: 1fr; }
+
+    .img-cell {
+      border-radius: 12px;
+      overflow: hidden;
+      background: #e4e2de;
+      aspect-ratio: 4/3;
+    }
+    .img-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .img-cell:hover img { transform: scale(1.03); }
+
+    /* ── SIDEBAR ── */
+    .sidebar-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 860px) {
+      .sidebar-col { position: sticky; top: 88px; }
+    }
+
+    .sidebar-card {
+      background: #fff;
+      border: 1px solid #e4e2de;
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .sidebar-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c0c0ba;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .sidebar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0eeea;
+    }
+    .sidebar-item:first-of-type { padding-top: 0; }
+    .sidebar-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .s-key {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c8c8c3;
+    }
+    .s-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    /* CTA — <button>, no href, email injected by JS only */
+    .sidebar-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      background: #0d0d0d;
+      color: #f5f2eb;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .sidebar-cta:hover { background: #1f1f1f; }
+    .sidebar-cta svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .sidebar-cta-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      background: #fff;
+      color: #0d0d0d;
+      border: 1px solid #e4e2de;
+      border-radius: 12px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .sidebar-cta-secondary:hover { 
+      background: #f7f8fb; 
+      border-color: #d1d1ce;
+    }
+    .sidebar-cta-secondary svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      border-top: 1px solid #e4e2de;
+      padding: 36px 0 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c0c0ba;
+    }
+
+    .footer-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #6b7280;
+      text-decoration: none;
+      transition: color 0.18s ease;
+    }
+    .footer-back:hover { color: #0d0d0d; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 560px) {
+      .detail-item {
+        flex: 1 1 50%;
+        padding: 11px 10px 11px 0;
+        border-right: none;
+        border-bottom: 1px solid #e4e2de;
+      }
+      .detail-item:nth-child(odd) {
+        border-right: 1px solid #e4e2de;
+      }
+      .detail-item:last-child,
+      .detail-item:nth-last-child(2):nth-child(odd) {
+        border-bottom: none;
+      }
+      .images-grid { grid-template-columns: 1fr; }
+      .page-footer { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="javascript:history.back()" class="back-btn">
+    <svg viewBox="0 0 14 12" fill="none">
+      <path d="M13 6H1M1 6L6 1M1 6L6 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back
+  </a>
+
+  <div class="page">
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="hero-meta-row">
+        {project.category && <span class="hero-category">{project.category}</span>}
+        {year && <span class="hero-year">{year}</span>}
+      </div>
+
+      <h1 class="hero-title">{project.title}</h1>
+
+      <div class="hero-details">
+        {project.company && project.company.trim() !== '' && (
+          <div class="detail-item">
+            <p class="detail-key">Company</p>
+            <p class="detail-val">{project.company}</p>
+          </div>
+        )}
+        <div class="detail-item">
+          <p class="detail-key">Location</p>
+          <p class="detail-val">{project.location || 'Remote'}</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-key">Category</p>
+          <p class="detail-val">{project.category || '—'}</p>
+        </div>
+        {project.featured && (
+          <div class="detail-item">
+            <p class="detail-key">Status</p>
+            <p class="detail-val">Featured</p>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <!-- Cover image — only if exists, no placeholder -->
+    {project.coverImage && (
+      <div class="cover-wrap">
+        <img
+          src={urlFor(project.coverImage).width(1400).quality(88).url()}
+          alt={project.title}
+          class="cover-img"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <!-- Body -->
+    <div class="page-body">
+
+      <!-- Content + extra images -->
+      <div class="content-col">
+        <div class="content-body">
+          {contentHtml
+            ? <Fragment set:html={contentHtml} />
+            : <p class="empty-content">No description added yet.</p>
+          }
+        </div>
+
+        {extraImages.length > 0 && (
+          <div class={`images-grid${extraImages.length === 1 ? ' single' : ''}`}>
+            {extraImages.map((img: any) => (
+              <div class="img-cell">
+                <img
+                  src={urlFor(img).width(900).quality(85).url()}
+                  alt={img.alt ?? project.title}
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar-col">
+        <div class="sidebar-card">
+          <span class="sidebar-label">Project info</span>
+
+          <div class="sidebar-item">
+            <span class="s-key">Title</span>
+            <span class="s-val">{project.title}</span>
+          </div>
+          {project.company && project.company.trim() !== '' && (
+            <div class="sidebar-item">
+              <span class="s-key">Company</span>
+              <span class="s-val">{project.company}</span>
+            </div>
+          )}
+          <div class="sidebar-item">
+            <span class="s-key">Location</span>
+            <span class="s-val">{project.location || 'Remote'}</span>
+          </div>
+          <div class="sidebar-item">
+            <span class="s-key">Category</span>
+            <span class="s-val">{project.category || '—'}</span>
+          </div>
+          {year && (
+            <div class="sidebar-item">
+              <span class="s-key">Year</span>
+              <span class="s-val">{year}</span>
+            </div>
+          )}
+        </div>
+
+        <!--
+          Email tidak ada di HTML. Disusun dari 3 bagian di JS runtime
+          supaya scraper / hover preview browser tidak bisa baca.
+        -->
+        <button
+          class="sidebar-cta"
+          id="cta-contact"
+          data-p1={ep1}
+          data-p2={ep2}
+          data-p3={ep3}
+          type="button"
+        >
+          <svg viewBox="0 0 14 14" fill="none">
+            <path d="M1 13L13 1M13 1H6M13 1V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Get in touch
+        </button>
+
+        {project.projectLink && (
+          <a href={project.projectLink} target="_blank" rel="noopener noreferrer" class="sidebar-cta-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            See Project
+          </a>
+        )}
+        
+      </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <span class="footer-label">Portfolio</span>
+      <a href="javascript:history.back()" class="footer-back">
+        <svg width="13" height="11" viewBox="0 0 13 11" fill="none">
+          <path d="M12 5.5H1M1 5.5L5.5 1M1 5.5L5.5 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to works
+      </a>
+    </footer>
+
+  </div>
+
+  <script>
+    // Assemble email only at click-time — never stored in DOM as a full address
+    const btn = document.getElementById('cta-contact');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const p1 = btn.dataset.p1 ?? '';
+        const p2 = btn.dataset.p2 ?? '';
+        const p3 = btn.dataset.p3 ?? '';
+        window.location.href = ['mai', 'lto', ':', p1, '@', p2, '.', p3].join('');
+      });
+    }
+  </script>
+
+</body>
+</html>

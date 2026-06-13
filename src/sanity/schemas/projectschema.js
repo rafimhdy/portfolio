@@ -8,6 +8,16 @@ export const projectSchema = {
   fields: [
     { name: "title", title: "Project Title", type: "string" },
     {
+      name: "slug",
+      title: "Slug (URL)",
+      type: "slug",
+      options: {
+        source: "title", // otomatis generate dari title
+        maxLength: 96,
+      },
+      validation: (Rule) => Rule.required(), // wajib diisi
+    },
+    {
       name: "coverImage",
       title: "Cover Image (Main)",
       type: "image",
@@ -31,6 +41,12 @@ export const projectSchema = {
     },
     { name: "company", title: "Company", type: "string" },
     { name: "location", title: "Location", type: "string" },
+    {
+      name: "projectLink",
+      title: "Project Link (Live Web / GitHub / Video Demo)",
+      type: "url",
+      description: "Kosongkan jika project ini tidak memiliki link eksternal.",
+    },
     {
       name: "content",
       title: "Full Description (Word Style Pro)",
