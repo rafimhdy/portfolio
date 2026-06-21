@@ -381,28 +381,6 @@ const ep3 = 'works';
       color: #374151;
     }
 
-    /* CTA — <button>, no href, email injected by JS only */
-    .sidebar-cta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 20px;
-      background: #0d0d0d;
-      color: #f5f2eb;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Satoshi', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-    .sidebar-cta:hover { background: #1f1f1f; }
-    .sidebar-cta svg { width: 13px; height: 13px; flex-shrink: 0; }
-
     .sidebar-cta-secondary {
       display: flex;
       align-items: center;
@@ -589,25 +567,6 @@ const ep3 = 'works';
             </div>
           )}
         </div>
-
-        <!--
-          Email tidak ada di HTML. Disusun dari 3 bagian di JS runtime
-          supaya scraper / hover preview browser tidak bisa baca.
-        -->
-        <button
-          class="sidebar-cta"
-          id="cta-contact"
-          data-p1={ep1}
-          data-p2={ep2}
-          data-p3={ep3}
-          type="button"
-        >
-          <svg viewBox="0 0 14 14" fill="none">
-            <path d="M1 13L13 1M13 1H6M13 1V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Get in touch
-        </button>
-
         {project.projectLink && (
           <a href={project.projectLink} target="_blank" rel="noopener noreferrer" class="sidebar-cta-secondary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -634,19 +593,6 @@ const ep3 = 'works';
     </footer>
 
   </div>
-
-  <script>
-    // Assemble email only at click-time — never stored in DOM as a full address
-    const btn = document.getElementById('cta-contact');
-    if (btn) {
-      btn.addEventListener('click', () => {
-        const p1 = btn.dataset.p1 ?? '';
-        const p2 = btn.dataset.p2 ?? '';
-        const p3 = btn.dataset.p3 ?? '';
-        window.location.href = ['mai', 'lto', ':', p1, '@', p2, '.', p3].join('');
-      });
-    }
-  </script>
 
 </body>
 </html>

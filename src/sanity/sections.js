@@ -55,4 +55,13 @@ export const portfolioSections = [
     accent: "#67e8f9",
     accentStrong: "#0891b2",
   },
+
+  {
+    slug: "technical-writing",
+    title: "Technical Writing",
+    description:
+      "Transforming complex technical concepts into clear, accurate, and accessible documentation.",
+    accent: "#a5b4fc",
+    accentStrong: "#4f46e5",
+  },
 ];

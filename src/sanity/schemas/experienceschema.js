@@ -63,6 +63,7 @@ export const experienceSchema = {
           { title: "Graphic Design", value: "design" },
           { title: "Administrative Support", value: "admin" },
           { title: "Customer Service", value: "customer-service" },
+          { title: "Technical Writing", value: "technical-writing" },
         ],
       },
     },
