@@ -90,11 +90,11 @@ const toolsGroups = chunkArray(tools, 10);
   .section-title { font-family: 'Instrument Serif', serif; font-size: 48px; color: #0f172a; margin: 0 0 8px; letter-spacing: -0.01em; }
   .section-subtitle { font-family: 'Inter', sans-serif; color: #64748b; font-size: 16px; margin: 0; }
 
-  /* ── 1. LAYOUT UTAMA: FLEX WRAP CENTER ── */
+  /* ── 1. LAYOUT UTAMA ── */
   .glass-cards-layout {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Bikin kotak ke-3 (ganjil) otomatis ke tengah */
+    justify-content: center;
     gap: 32px;
     width: 100%;
     max-width: 864px; 
@@ -105,12 +105,9 @@ const toolsGroups = chunkArray(tools, 10);
   /* ── 2. INDUK BOX GLASSMORPHISM ── */
   .glass-card {
     flex: 0 0 auto;
-    
-    /* KUNCI FIX: Memaksa lebar tepat 50% dikurangi setengah gap, biar pasti muat 2 per baris */
     width: calc(50% - 16px); 
     max-width: 400px;
     height: 400px; 
-    
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -123,7 +120,7 @@ const toolsGroups = chunkArray(tools, 10);
     box-sizing: border-box;
   }
 
-  /* ── 3A. LAYOUT BENTO GRID (PAS 10 ITEM) ── */
+  /* ── 3A. LAYOUT BENTO GRID ── */
   .bento-perfect {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -137,7 +134,7 @@ const toolsGroups = chunkArray(tools, 10);
     grid-row: span 2; 
   }
 
-  /* ── 3B. LAYOUT FLEKSIBEL (KURANG DARI 10 ITEM) ── */
+  /* ── 3B. LAYOUT FLEKSIBEL ── */
   .bento-flexible {
     display: flex;
     flex-wrap: wrap;
@@ -145,13 +142,9 @@ const toolsGroups = chunkArray(tools, 10);
     justify-content: center;
     gap: 14px;
   }
+  .bento-flexible .tool-item-wrapper { width: 100px; height: 100px; }
 
-  .bento-flexible .tool-item-wrapper {
-    width: 100px; 
-    height: 100px;
-  }
-
-  /* ── 4. STYLING KOTAK SKILL (ITEM) ── */
+  /* ── 4. STYLING KOTAK SKILL ── */
   .tool-item-wrapper {
     position: relative;
     background: #ffffff;
@@ -159,6 +152,8 @@ const toolsGroups = chunkArray(tools, 10);
     overflow: hidden; 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     cursor: pointer;
+    /* Force GPU rendering buat cegah bug overflow di iOS Safari */
+    transform: translateZ(0); 
   }
 
   .logo-display {
@@ -181,38 +176,39 @@ const toolsGroups = chunkArray(tools, 10);
   }
 
   .bento-perfect .tool-item-wrapper:nth-child(1) .tool-logo,
-  .bento-perfect .tool-item-wrapper:nth-child(8) .tool-logo {
-    max-height: 80px;
-  }
+  .bento-perfect .tool-item-wrapper:nth-child(8) .tool-logo { max-height: 80px; }
 
-  /* ── 5. GLASSMORPHISM SLIDE-UP OVERLAY ── */
+  /* ── 5. GLASSMORPHISM OVERLAY (FIX TEXT BOCOR) ── */
   .glass-overlay {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 8px;
     box-sizing: border-box;
-    transform: translateY(101%);
-    will-change: transform;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Ganti translateY jauh dengan Opacity biar 100% gaib kalau ditutup */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px); /* Slide naik sedikit aja biar elegan */
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 5;
   }
 
   .tool-item-wrapper:hover .glass-overlay,
   .tool-item-wrapper.active .glass-overlay {
+    opacity: 1;
+    visibility: visible;
     transform: translateY(0);
   }
 
-  .tool-item-wrapper:hover .logo-display {
-    transform: scale(0.85); 
-  }
+  .tool-item-wrapper:hover .logo-display { transform: scale(0.85); }
 
   .skill-name {
     font-family: 'Satoshi', sans-serif;
@@ -225,29 +221,33 @@ const toolsGroups = chunkArray(tools, 10);
   }
 
   .bento-perfect .tool-item-wrapper:nth-child(1) .skill-name,
-  .bento-perfect .tool-item-wrapper:nth-child(8) .skill-name {
-    font-size: 16px;
-  }
+  .bento-perfect .tool-item-wrapper:nth-child(8) .skill-name { font-size: 16px; }
 
   .tool-fallback { font-family: 'Satoshi', sans-serif; font-size: 12px; font-weight: 600; color: #475569; text-align: center; }
   .empty-card { display: flex; align-items: center; justify-content: center; }
   .empty-state { color: #64748b; font-size: 14px; }
 
-  /* ── MOBILE MODE RESPONSIVE ── */
+  /* ── 6. MOBILE MODE RESPONSIVE (FIX LAYOUT BANTET) ── */
   @media (max-width: 768px) {
     .glass-cards-layout { gap: 16px; padding: 20px 16px; }
     
     .glass-card { 
-      width: 100%; /* Balikin ke 1 baris 1 kotak kalau di HP */
+      width: 100%; 
       height: auto; 
-      aspect-ratio: 1/1; 
-      padding: 16px; 
+      /* Fix 1: Bikin aspect ratio lebih tinggi biar kotak dalemnya nggak gepeng */
+      aspect-ratio: 1 / 1.15; 
+      padding: 14px; 
       max-width: 100%; 
     }
     
-    .bento-perfect { gap: 10px; }
-    .bento-flexible { gap: 10px; }
-    .bento-flexible .tool-item-wrapper { width: calc(33.33% - 7px); height: auto; aspect-ratio: 1/1; }
+    .bento-perfect { gap: 8px; }
+    .bento-flexible { gap: 8px; }
+    .bento-flexible .tool-item-wrapper { width: calc(33.33% - 6px); height: auto; aspect-ratio: 1/1; }
+    
+    /* Fix 2: Kurangin padding logo biar logonya bisa nampil gede */
+    .logo-display { padding: 8px; }
+    
+    /* Fix 3: Kecilin dikit font di mobile biar teks panjang aman */
     .skill-name { font-size: 11px; }
     .bento-perfect .tool-item-wrapper:nth-child(1) .skill-name,
     .bento-perfect .tool-item-wrapper:nth-child(8) .skill-name { font-size: 14px; }
